@@ -73,13 +73,13 @@ release: clean build plugin
 	@if [ ! -d $(BUILD_DIR)/EFEFTEAudioUnit.component ]; then echo "Audio Unit not found"; exit 1; fi
 	@if [ ! -d $(BUILD_DIR)/EFEFTEStandalone.app ]; then echo "Standalone app not found"; exit 1; fi
 	@echo "Packaging Audio Unit..."
-	cd $(BUILD_DIR) && zip -r EFEFTE-AudioUnit-v$$(git describe --tags --abbrev=0 2>/dev/null || echo "1.0.0").zip EFEFTEAudioUnit.component
+	cd $(BUILD_DIR) && zip -r EFEFTE-AudioUnit-$$(git describe --tags --abbrev=0 2>/dev/null || echo "v1.0.0").zip EFEFTEAudioUnit.component
 	@echo "Packaging Standalone App..."
-	cd $(BUILD_DIR) && zip -r EFEFTE-Standalone-v$$(git describe --tags --abbrev=0 2>/dev/null || echo "1.0.0").zip EFEFTEStandalone.app
+	cd $(BUILD_DIR) && zip -r EFEFTE-Standalone-$$(git describe --tags --abbrev=0 2>/dev/null || echo "v1.0.0").zip EFEFTEStandalone.app
 	@echo "Creating GitHub release..."
-	gh release create v$$(date +%Y.%m.%d) $(BUILD_DIR)/EFEFTE-*.zip \
-		--title "EFEFTE v$$(date +%Y.%m.%d)" \
-		--notes "**EFEFTE Release v$$(date +%Y.%m.%d)**\n\n🎵 **Audio Unit Plugin for Logic Pro**\n- Real-time FFT spectrum analysis\n- Professional audio processing tools\n- Native macOS integration\n\n💻 **Standalone Spectrum Analyser**\n- Independent microphone analysis\n- Development and testing tool\n- No Logic Pro required\n\n### Installation\n\n**Audio Unit:**\n1. Download \`EFEFTE-AudioUnit-*.zip\`\n2. Unzip and copy \`EFEFTEAudioUnit.component\` to \`~/Library/Audio/Plug-Ins/Components/\`\n3. Restart Logic Pro\n\n**Standalone:**\n1. Download \`EFEFTE-Standalone-*.zip\`\n2. Unzip and run \`EFEFTEStandalone.app\`"
+	@echo "Current version: $$(git describe --tags --abbrev=0 2>/dev/null || echo 'v1.0.0')"
+	@echo "Please create a new semantic version tag first (e.g., git tag v1.0.2 && git push --tags)"
+	@echo "Then GitHub Actions will automatically build and release."
 
 # Help
 help:
@@ -95,5 +95,5 @@ help:
 	@echo "  benchmark - Run benchmarks"
 	@echo "  install   - Install the library"
 	@echo "  deploy    - Format, build, test, commit and push"
-	@echo "  release   - Create GitHub release with downloadable packages"
+	@echo "  release   - Build and package (use git tags for actual releases)"
 	@echo "  help      - Show this help message"
