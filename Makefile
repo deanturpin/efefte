@@ -1,4 +1,4 @@
-.PHONY: all build clean format test benchmark install deploy
+.PHONY: all build clean format test benchmark install deploy release
 
 # Default target
 all: build plugin run
@@ -67,6 +67,20 @@ deploy: format build test
 	git commit -m "Auto-commit from make deploy 🤖" || echo "No changes to commit"
 	git push
 
+# Create a new release with downloadable assets
+release: clean build plugin
+	@echo "Creating release..."
+	@if [ ! -f $(BUILD_DIR)/EFEFTEAudioUnit.component ]; then echo "Audio Unit not found"; exit 1; fi
+	@if [ ! -f $(BUILD_DIR)/EFEFTEStandalone.app ]; then echo "Standalone app not found"; exit 1; fi
+	@echo "Packaging Audio Unit..."
+	cd $(BUILD_DIR) && zip -r EFEFTE-AudioUnit-v$$(git describe --tags --abbrev=0 2>/dev/null || echo "1.0.0").zip EFEFTEAudioUnit.component
+	@echo "Packaging Standalone App..."
+	cd $(BUILD_DIR) && zip -r EFEFTE-Standalone-v$$(git describe --tags --abbrev=0 2>/dev/null || echo "1.0.0").zip EFEFTEStandalone.app
+	@echo "Creating GitHub release..."
+	gh release create v$$(date +%Y.%m.%d) $(BUILD_DIR)/EFEFTE-*.zip \
+		--title "EFEFTE v$$(date +%Y.%m.%d)" \
+		--notes "**EFEFTE Release v$$(date +%Y.%m.%d)**\n\n🎵 **Audio Unit Plugin for Logic Pro**\n- Real-time FFT spectrum analysis\n- Professional audio processing tools\n- Native macOS integration\n\n💻 **Standalone Spectrum Analyser**\n- Independent microphone analysis\n- Development and testing tool\n- No Logic Pro required\n\n### Installation\n\n**Audio Unit:**\n1. Download \`EFEFTE-AudioUnit-*.zip\`\n2. Unzip and copy \`EFEFTEAudioUnit.component\` to \`~/Library/Audio/Plug-Ins/Components/\`\n3. Restart Logic Pro\n\n**Standalone:**\n1. Download \`EFEFTE-Standalone-*.zip\`\n2. Unzip and run \`EFEFTEStandalone.app\`"
+
 # Help
 help:
 	@echo "Available targets:"
@@ -81,4 +95,5 @@ help:
 	@echo "  benchmark - Run benchmarks"
 	@echo "  install   - Install the library"
 	@echo "  deploy    - Format, build, test, commit and push"
+	@echo "  release   - Create GitHub release with downloadable packages"
 	@echo "  help      - Show this help message"
