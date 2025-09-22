@@ -1,10 +1,27 @@
-# EFEFTE - FFT Benchmark Project Instructions
+# EFEFTE - High-Performance FFT Library & Spectrum Analyser
 
-## Project Overview
+🎵 **Real-time audio processing** • 🚀 **High-performance C++23** • 🎧 **Logic Pro integration**
 
-Create EFEFTE - a comprehensive benchmarking suite and high-performance FFT library
-to compare against established libraries (FFTW3, Kiss FFT, Intel MKL) with the
-goal of creating a drop-in replacement and APT package.
+## Quick Start
+
+```bash
+# Clone and build
+git clone https://github.com/deanturpin/efefte.git
+cd efefte
+make  # Builds library, plugins, and launches spectrum analyser!
+```
+
+## Download
+
+**🌐 [Visit efefte.dev](https://efefte.dev)** for downloads and documentation
+
+- **Audio Unit Plugin** - Logic Pro integration with real-time spectrum analysis
+- **Standalone App** - Independent spectrum analyser for development
+- **Developer Library** - C++ library with FFTW3-compatible API
+
+## What is EFEFTE?
+
+EFEFTE is a modern FFT library and spectrum analyser built with the latest C++ features. Originally designed as a high-performance alternative to FFTW3, it has evolved into a comprehensive audio analysis toolkit.
 
 ## Dependencies to Install
 

@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EFEFTE - High-Performance FFT Library</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        header {
+            text-align: center;
+            color: white;
+            margin-bottom: 3rem;
+        }
+
+        h1 {
+            font-size: 3.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .subtitle {
+            font-size: 1.3rem;
+            opacity: 0.9;
+            margin-bottom: 2rem;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 1rem 2rem;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            text-decoration: none;
+            border-radius: 50px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.3);
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn:hover {
+            background: rgba(255,255,255,0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+        }
+
+        .btn.primary {
+            background: #ff6b6b;
+            border-color: #ff6b6b;
+        }
+
+        .btn.primary:hover {
+            background: #ff5252;
+        }
+
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin: 4rem 0;
+        }
+
+        .feature-card {
+            background: rgba(255,255,255,0.95);
+            padding: 2rem;
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .feature-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .feature-card h3 {
+            color: #4a5568;
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+        }
+
+        .feature-card p {
+            color: #666;
+            line-height: 1.7;
+        }
+
+        .download-section {
+            background: rgba(255,255,255,0.95);
+            padding: 3rem;
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            margin: 3rem 0;
+            text-align: center;
+        }
+
+        .download-section h2 {
+            color: #4a5568;
+            margin-bottom: 2rem;
+            font-size: 2.5rem;
+        }
+
+        .download-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .download-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            border: 2px solid #e2e8f0;
+            transition: all 0.3s ease;
+        }
+
+        .download-card:hover {
+            border-color: #667eea;
+            transform: translateY(-2px);
+        }
+
+        .download-card h4 {
+            color: #4a5568;
+            margin-bottom: 1rem;
+            font-size: 1.3rem;
+        }
+
+        .download-card .version {
+            color: #718096;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+
+        .coming-soon {
+            background: #f7fafc;
+            color: #718096;
+            padding: 1rem;
+            border-radius: 10px;
+            margin-top: 1rem;
+            font-style: italic;
+        }
+
+        .github-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #4a5568;
+            text-decoration: none;
+            margin-top: 2rem;
+            font-weight: 600;
+        }
+
+        .github-link:hover {
+            color: #667eea;
+        }
+
+        footer {
+            text-align: center;
+            color: rgba(255,255,255,0.8);
+            margin-top: 4rem;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(255,255,255,0.2);
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.5rem;
+            }
+
+            .container {
+                padding: 1rem;
+            }
+
+            .hero-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>EFEFTE</h1>
+            <p class="subtitle">High-Performance FFT Library & Real-Time Spectrum Analyser</p>
+            <div class="hero-buttons">
+                <a href="#download" class="btn primary">Download Plugin</a>
+                <a href="https://github.com/deanturpin/efefte" class="btn">View on GitHub</a>
+                <a href="#features" class="btn">Learn More</a>
+            </div>
+        </header>
+
+        <section id="features" class="features">
+            <div class="feature-card">
+                <div class="feature-icon">🚀</div>
+                <h3>High Performance</h3>
+                <p>Modern C++23 implementation with SIMD optimisation and multi-threading. Drop-in replacement for FFTW3 with competitive performance.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">🎵</div>
+                <h3>Logic Pro Integration</h3>
+                <p>Native Audio Unit plugin for real-time spectrum analysis in Logic Pro. Professional-grade visualisation with musical frequency mapping.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">🔬</div>
+                <h3>Real-Time Analysis</h3>
+                <p>Live microphone input processing with FFT-based spectrum analysis. Perfect for audio engineers, musicians, and researchers.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">🛠️</div>
+                <h3>Developer Friendly</h3>
+                <p>Complete FFTW3-compatible API with modern C++ features. Easy integration into existing projects with comprehensive documentation.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">🎨</div>
+                <h3>Native macOS Design</h3>
+                <p>Beautiful SwiftUI interface with Metal-accelerated visualisation. Follows Apple's design guidelines for a professional experience.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">📊</div>
+                <h3>Advanced Features</h3>
+                <p>Key-aware musical EQ, bum note detection, spectral processing, and harmonic analysis tools for professional audio work.</p>
+            </div>
+        </section>
+
+        <section id="download" class="download-section">
+            <h2>Download EFEFTE</h2>
+            <p>Get started with EFEFTE today. Choose the version that's right for you.</p>
+
+            <div class="download-grid">
+                <div class="download-card">
+                    <h4>🎧 Audio Unit Plugin</h4>
+                    <p class="version">Version 1.0.0 • macOS 10.15+</p>
+                    <p>Professional Logic Pro plugin with real-time spectrum analysis and musical frequency tools.</p>
+                    <div class="coming-soon">
+                        Coming Soon - Building release pipeline
+                    </div>
+                </div>
+
+                <div class="download-card">
+                    <h4>💻 Standalone App</h4>
+                    <p class="version">Version 1.0.0 • macOS 10.15+</p>
+                    <p>Independent spectrum analyser application for testing and development work.</p>
+                    <div class="coming-soon">
+                        Coming Soon - Creating installer package
+                    </div>
+                </div>
+
+                <div class="download-card">
+                    <h4>📚 Developer Library</h4>
+                    <p class="version">Version 1.0.0 • Cross-Platform</p>
+                    <p>C++ library for embedding FFT functionality in your own applications.</p>
+                    <a href="https://github.com/deanturpin/efefte" class="github-link">
+                        <span>📁</span> Source Code on GitHub
+                    </a>
+                </div>
+            </div>
+
+            <div style="margin-top: 3rem; padding: 2rem; background: #f8f9fa; border-radius: 15px;">
+                <h3 style="color: #4a5568; margin-bottom: 1rem;">🏗️ Current Status</h3>
+                <p style="color: #666;">EFEFTE is in active development. The core FFT library and spectrum analyser are functional. We're working on packaging and distribution for easy installation.</p>
+                <p style="color: #666; margin-top: 1rem;"><strong>Want to try it now?</strong> Clone the repository and build from source using our simple <code>make</code> command!</p>
+            </div>
+        </section>
+
+        <footer>
+            <p>&copy; 2024 EFEFTE Project. Built with modern C++ and lots of ☕</p>
+            <p>Open source • MIT Licensed • Contributions welcome</p>
+        </footer>
+    </div>
+</body>
+</html>

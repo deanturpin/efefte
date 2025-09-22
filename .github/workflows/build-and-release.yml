@@ -1,0 +1,103 @@
+name: Build and Release
+
+on:
+  push:
+    branches: [ main ]
+    tags: [ 'v*' ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-macos:
+    runs-on: macos-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Install dependencies
+      run: |
+        brew install cmake
+
+    - name: Build EFEFTE
+      run: |
+        make clean
+        make build
+
+    - name: Build plugins
+      run: |
+        make plugin
+
+    - name: Run tests
+      run: |
+        ./build/efefte
+
+    - name: Package Audio Unit
+      run: |
+        cd build
+        zip -r EFEFTE-AudioUnit-${{ github.sha }}.zip EFEFTEAudioUnit.component
+
+    - name: Package Standalone App
+      run: |
+        cd build
+        zip -r EFEFTE-Standalone-${{ github.sha }}.zip EFEFTEStandalone.app
+
+    - name: Upload Audio Unit Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: efefte-audiounit
+        path: build/EFEFTE-AudioUnit-${{ github.sha }}.zip
+
+    - name: Upload Standalone Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: efefte-standalone
+        path: build/EFEFTE-Standalone-${{ github.sha }}.zip
+
+    - name: Create Release
+      if: startsWith(github.ref, 'refs/tags/v')
+      uses: softprops/action-gh-release@v1
+      with:
+        files: |
+          build/EFEFTE-AudioUnit-${{ github.sha }}.zip
+          build/EFEFTE-Standalone-${{ github.sha }}.zip
+        body: |
+          ## EFEFTE Release ${{ github.ref_name }}
+
+          🎵 **Audio Unit Plugin for Logic Pro**
+          - Real-time FFT spectrum analysis
+          - Professional audio processing tools
+          - Native macOS integration
+
+          💻 **Standalone Spectrum Analyser**
+          - Independent microphone analysis
+          - Development and testing tool
+          - No Logic Pro required
+
+          ### Installation
+
+          **Audio Unit:**
+          1. Download `EFEFTE-AudioUnit-*.zip`
+          2. Unzip and copy `EFEFTEAudioUnit.component` to `~/Library/Audio/Plug-Ins/Components/`
+          3. Restart Logic Pro
+
+          **Standalone:**
+          1. Download `EFEFTE-Standalone-*.zip`
+          2. Unzip and run `EFEFTEStandalone.app`
+
+          Built with EFEFTE FFT Library v${{ github.ref_name }}
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  deploy-docs:
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Deploy to GitHub Pages
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: ./docs
+        cname: efefte.dev
