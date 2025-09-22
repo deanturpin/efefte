@@ -25,7 +25,7 @@ jobs:
       run: |
         # Build everything in one step to avoid path issues
         make clean
-        make build plugin
+        make build plugin dmg
 
     - name: Run tests
       run: |
@@ -61,6 +61,12 @@ jobs:
         name: efefte-standalone
         path: build/EFEFTE-Standalone-${{ github.sha }}.zip
 
+    - name: Upload DMG Installer
+      uses: actions/upload-artifact@v4
+      with:
+        name: efefte-dmg
+        path: build/TurbeauxSounds-EFEFTE-*.dmg
+
     - name: Create Release
       if: startsWith(github.ref, 'refs/tags/v')
       uses: softprops/action-gh-release@v1
@@ -68,8 +74,9 @@ jobs:
         files: |
           build/EFEFTE-AudioUnit-${{ github.sha }}.zip
           build/EFEFTE-Standalone-${{ github.sha }}.zip
+          build/TurbeauxSounds-EFEFTE-*.dmg
         body: |
-          ## EFEFTE Release ${{ github.ref_name }}
+          ## Turbeaux Sounds EFEFTE ${{ github.ref_name }}
 
           🎵 **Audio Unit Plugin for Logic Pro**
           - Real-time FFT spectrum analysis
@@ -81,16 +88,17 @@ jobs:
           - Development and testing tool
           - No Logic Pro required
 
-          ### Installation
+          ### Easy Installation
 
-          **Audio Unit:**
-          1. Download `EFEFTE-AudioUnit-*.zip`
-          2. Unzip and copy `EFEFTEAudioUnit.component` to `~/Library/Audio/Plug-Ins/Components/`
-          3. Restart Logic Pro
+          **💿 DMG Installer (Recommended):**
+          1. Download `TurbeauxSounds-EFEFTE-*.dmg`
+          2. Double-click to mount
+          3. Drag `EFEFTEAudioUnit.component` to `Components` folder
+          4. Drag `EFEFTEStandalone.app` to `Applications` folder
+          5. Restart Logic Pro
 
-          **Standalone:**
-          1. Download `EFEFTE-Standalone-*.zip`
-          2. Unzip and run `EFEFTEStandalone.app`
+          **📦 Manual Installation:**
+          - Download individual zip files and install manually
 
           Built with EFEFTE FFT Library v${{ github.ref_name }}
       env:

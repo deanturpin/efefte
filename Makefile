@@ -1,4 +1,4 @@
-.PHONY: all build clean format test benchmark install deploy release plugin run debug help
+.PHONY: all build clean format test benchmark install deploy release plugin run debug help dmg
 
 # Default target
 all: build plugin run
@@ -60,6 +60,24 @@ debug:
 	cd $(BUILD_DIR) && cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_EXPORT_COMPILE_COMMANDS=ON ..
 	cd $(BUILD_DIR) && make -j$(shell nproc 2>/dev/null || sysctl -n hw.ncpu 2>/dev/null || echo 4)
 
+# Create DMG installer with drag-and-drop interface
+dmg: clean build plugin
+	@echo "Creating DMG installer..."
+	@if [ ! -d $(BUILD_DIR)/EFEFTEAudioUnit.component ]; then echo "Audio Unit not found"; exit 1; fi
+	@if [ ! -d $(BUILD_DIR)/EFEFTEStandalone.app ]; then echo "Standalone app not found"; exit 1; fi
+	@echo "Setting up DMG contents..."
+	mkdir -p $(BUILD_DIR)/dmg-contents
+	cp -R $(BUILD_DIR)/EFEFTEAudioUnit.component $(BUILD_DIR)/dmg-contents/
+	cp -R $(BUILD_DIR)/EFEFTEStandalone.app $(BUILD_DIR)/dmg-contents/
+	ln -sf "/Library/Audio/Plug-Ins/Components" $(BUILD_DIR)/dmg-contents/
+	ln -sf "/Applications" $(BUILD_DIR)/dmg-contents/
+	@echo "Creating DMG..."
+	hdiutil create -volname "Turbeaux Sounds EFEFTE" \
+		-srcfolder $(BUILD_DIR)/dmg-contents \
+		-ov -format UDZO \
+		$(BUILD_DIR)/TurbeauxSounds-EFEFTE-v$$(git describe --tags --abbrev=0 2>/dev/null | sed 's/v//' || echo "1.0.0").dmg
+	@echo "DMG created: $(BUILD_DIR)/TurbeauxSounds-EFEFTE-*.dmg"
+
 # Deploy target with auto-commit and push
 deploy: format build test
 	@echo "Deploying changes..."
@@ -96,4 +114,5 @@ help:
 	@echo "  install   - Install the library"
 	@echo "  deploy    - Format, build, test, commit and push"
 	@echo "  release   - Build and package (use git tags for actual releases)"
+	@echo "  dmg       - Create DMG installer with drag-and-drop interface"
 	@echo "  help      - Show this help message"
