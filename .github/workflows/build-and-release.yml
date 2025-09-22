@@ -25,11 +25,24 @@ jobs:
       run: |
         # Build everything in one step to avoid path issues
         make clean
-        make build plugin dmg
+        make build plugin
 
     - name: Run tests
       run: |
         ./build/efefte
+
+    - name: Create DMG Installer
+      run: |
+        echo "Creating DMG installer..."
+        mkdir -p build/dmg-contents
+        cp -R build/EFEFTEAudioUnit.component build/dmg-contents/
+        cp -R build/EFEFTEStandalone.app build/dmg-contents/
+        ln -sf "/Library/Audio/Plug-Ins/Components" build/dmg-contents/
+        ln -sf "/Applications" build/dmg-contents/
+        hdiutil create -volname "Turbeaux Sounds EFEFTE" \
+          -srcfolder build/dmg-contents \
+          -ov -format UDZO \
+          build/TurbeauxSounds-EFEFTE-${{ github.ref_name }}.dmg
 
     - name: Package Audio Unit
       run: |
