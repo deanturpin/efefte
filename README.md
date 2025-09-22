@@ -1,6 +1,10 @@
-# EFEFTE - High-Performance FFT Library & Spectrum Analyser
+# Ef Ef Te
 
-🎵 **Real-time audio processing** • 🚀 **High-performance C++23** • 🎧 **Logic Pro integration**
+## FFT Library & Logic Pro plugin
+
+[[build-badge]] [[license-badge]] [[release-badge]] [[codecov-badge]] [[platform-badge]]
+
+A drop in replacement for FFTW3 written in modern latest C++ with a focus on high performance and ease of use. Includes a real-time spectrum analyser Audio Unit plugin for Logic Pro.
 
 ## Quick Start
 
