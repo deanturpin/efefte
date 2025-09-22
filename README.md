@@ -27,6 +27,8 @@ make  # Builds library, plugins, and launches spectrum analyser!
 
 EFEFTE is a modern FFT library and spectrum analyser built with the latest C++ features. Originally designed as a high-performance alternative to FFTW3, it has evolved into a comprehensive audio analysis toolkit.
 
+Based on the original [DFT project](https://github.com/deanturpin/dft), EFEFTE takes the core concepts and expands them into a full-featured library and plugin suite.
+
 ## Dependencies to Install
 
 - **FFTW3**: `apt install libfftw3-dev` or `brew install fftw`
