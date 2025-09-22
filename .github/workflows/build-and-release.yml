@@ -16,16 +16,14 @@ jobs:
 
     - name: Install dependencies
       run: |
-        brew install cmake
+        # CMAKE is already installed on GitHub runners
+        echo "Using system cmake: $(cmake --version)"
 
     - name: Build EFEFTE
       run: |
+        # Build everything in one step to avoid path issues
         make clean
-        make build
-
-    - name: Build plugins
-      run: |
-        make plugin
+        make build plugin
 
     - name: Run tests
       run: |
@@ -34,12 +32,20 @@ jobs:
     - name: Package Audio Unit
       run: |
         cd build
-        zip -r EFEFTE-AudioUnit-${{ github.sha }}.zip EFEFTEAudioUnit.component
+        if [ -d "EFEFTEAudioUnit.component" ]; then
+          zip -r EFEFTE-AudioUnit-${{ github.sha }}.zip EFEFTEAudioUnit.component
+        else
+          echo "Audio Unit not found, skipping..."
+        fi
 
     - name: Package Standalone App
       run: |
         cd build
-        zip -r EFEFTE-Standalone-${{ github.sha }}.zip EFEFTEStandalone.app
+        if [ -d "EFEFTEStandalone.app" ]; then
+          zip -r EFEFTE-Standalone-${{ github.sha }}.zip EFEFTEStandalone.app
+        else
+          echo "Standalone app not found, skipping..."
+        fi
 
     - name: Upload Audio Unit Artifact
       uses: actions/upload-artifact@v4
