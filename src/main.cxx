@@ -1,6 +1,7 @@
-#include <print>
-#include <numbers>
 #include <cmath>
+#include <numbers>
+#include <print>
+
 #include "../include/efefte.h"
 #include "../include/test.h"
 
@@ -12,8 +13,8 @@ int main() {
     constexpr int N = 64;
 
     // Allocate aligned memory
-    fftw_complex *input = static_cast<fftw_complex*>(fftw_malloc(sizeof(fftw_complex) * N));
-    fftw_complex *output = static_cast<fftw_complex*>(fftw_malloc(sizeof(fftw_complex) * N));
+    fftw_complex *input = static_cast<fftw_complex *>(fftw_malloc(sizeof(fftw_complex) * N));
+    fftw_complex *output = static_cast<fftw_complex *>(fftw_malloc(sizeof(fftw_complex) * N));
 
     if (!input || !output) {
         std::print("Memory allocation failed\n");
@@ -22,8 +23,8 @@ int main() {
 
     // Generate test signal: 440 Hz sine wave (A4 note)
     std::print("Generating 440 Hz sine wave test signal...\n");
-    const double sample_rate = 1024.0;  // Hz
-    const double frequency = 440.0;     // Hz (A4 note)
+    const double sample_rate = 1024.0; // Hz
+    const double frequency = 440.0;    // Hz (A4 note)
     efefte_generate_sine(input, N, frequency, sample_rate);
 
     // Create plan

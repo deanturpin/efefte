@@ -1,10 +1,11 @@
 cmake_minimum_required(VERSION 3.25)
+
 project(efefte
     VERSION 0.1.0
     DESCRIPTION "High-performance FFT library as drop-in FFTW3 replacement"
     LANGUAGES CXX)
 
-# Require latest C++ standard
+# Require latest C++ standard (Clang supports C++23)
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
@@ -58,6 +59,22 @@ install(FILES include/efefte.h DESTINATION include)
 
 # Testing and benchmarking (will be added later)
 enable_testing()
+
+# Plugins (macOS only, requires Clang for Objective-C++)
+if(APPLE AND (CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang"))
+    option(BUILD_AUDIO_UNIT "Build Audio Unit plugin for Logic Pro" ON)
+    option(BUILD_STANDALONE "Build standalone spectrum analyser app" ON)
+
+    if(BUILD_AUDIO_UNIT)
+        add_subdirectory(plugin/AudioUnit)
+    endif()
+
+    if(BUILD_STANDALONE)
+        add_subdirectory(plugin/Standalone)
+    endif()
+elseif(APPLE)
+    message(STATUS "Skipping Objective-C++ plugins (requires Clang, currently using ${CMAKE_CXX_COMPILER_ID})")
+endif()
 
 # Package configuration
 include(CMakePackageConfigHelpers)

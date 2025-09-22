@@ -1,6 +1,6 @@
 ---
 Language: Cpp
-Standard: c++26
+Standard: c++20
 
 # Basic formatting
 BasedOnStyle: LLVM

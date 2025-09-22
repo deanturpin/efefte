@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>CFBundleDevelopmentRegion</key>
+    <string>en</string>
+    <key>CFBundleExecutable</key>
+    <string>EFEFTEAudioUnit</string>
+    <key>CFBundleIdentifier</key>
+    <string>com.efefte.audiounit</string>
+    <key>CFBundleInfoDictionaryVersion</key>
+    <string>6.0</string>
+    <key>CFBundleName</key>
+    <string>EFEFTE Spectrum Analyser</string>
+    <key>CFBundlePackageType</key>
+    <string>BNDL</string>
+    <key>CFBundleShortVersionString</key>
+    <string>1.0</string>
+    <key>CFBundleSignature</key>
+    <string>????</string>
+    <key>CFBundleVersion</key>
+    <string>1.0</string>
+    <key>AudioComponents</key>
+    <array>
+        <dict>
+            <key>type</key>
+            <string>aufx</string>
+            <key>subtype</key>
+            <string>efft</string>
+            <key>manufacturer</key>
+            <string>Efft</string>
+            <key>name</key>
+            <string>EFEFTE: Spectrum Analyser</string>
+            <key>description</key>
+            <string>Real-time FFT spectrum analyser using EFEFTE library</string>
+            <key>version</key>
+            <integer>1</integer>
+            <key>factoryFunction</key>
+            <string>EFEFTEAudioUnitFactory</string>
+            <key>sandboxSafe</key>
+            <true/>
+        </dict>
+    </array>
+    <key>NSHighResolutionCapable</key>
+    <true/>
+</dict>
+</plist>

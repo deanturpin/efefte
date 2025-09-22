@@ -1,7 +1,8 @@
 #include "../include/efefte.h"
+
+#include <cmath>
 #include <cstdlib>
 #include <cstring>
-#include <cmath>
 #include <numbers>
 #include <print>
 
@@ -25,12 +26,12 @@ static double time_limit = -1.0;
 extern "C" {
 
 // Core planning functions
-fftw_plan fftw_plan_dft_1d(int n, fftw_complex *in, fftw_complex *out,
-                           int sign, unsigned flags) {
+fftw_plan fftw_plan_dft_1d(int n, fftw_complex *in, fftw_complex *out, int sign, unsigned flags) {
     std::print("fftw_plan_dft_1d: n={}, sign={}, flags={}\n", n, sign, flags);
 
     fftw_plan plan = static_cast<fftw_plan>(malloc(sizeof(fftw_plan_s)));
-    if (!plan) return nullptr;
+    if (!plan)
+        return nullptr;
 
     plan->n = n;
     plan->rank = 1;
@@ -44,13 +45,13 @@ fftw_plan fftw_plan_dft_1d(int n, fftw_complex *in, fftw_complex *out,
     return plan;
 }
 
-fftw_plan fftw_plan_dft_2d(int n0, int n1,
-                           fftw_complex *in, fftw_complex *out,
-                           int sign, unsigned flags) {
+fftw_plan fftw_plan_dft_2d(int n0, int n1, fftw_complex *in, fftw_complex *out, int sign,
+                           unsigned flags) {
     std::print("fftw_plan_dft_2d: n0={}, n1={}, sign={}, flags={}\n", n0, n1, sign, flags);
 
     fftw_plan plan = static_cast<fftw_plan>(malloc(sizeof(fftw_plan_s)));
-    if (!plan) return nullptr;
+    if (!plan)
+        return nullptr;
 
     plan->n = n0 * n1;
     plan->rank = 2;
@@ -64,13 +65,14 @@ fftw_plan fftw_plan_dft_2d(int n0, int n1,
     return plan;
 }
 
-fftw_plan fftw_plan_dft_3d(int n0, int n1, int n2,
-                           fftw_complex *in, fftw_complex *out,
-                           int sign, unsigned flags) {
-    std::print("fftw_plan_dft_3d: n0={}, n1={}, n2={}, sign={}, flags={}\n", n0, n1, n2, sign, flags);
+fftw_plan fftw_plan_dft_3d(int n0, int n1, int n2, fftw_complex *in, fftw_complex *out, int sign,
+                           unsigned flags) {
+    std::print("fftw_plan_dft_3d: n0={}, n1={}, n2={}, sign={}, flags={}\n", n0, n1, n2, sign,
+               flags);
 
     fftw_plan plan = static_cast<fftw_plan>(malloc(sizeof(fftw_plan_s)));
-    if (!plan) return nullptr;
+    if (!plan)
+        return nullptr;
 
     plan->n = n0 * n1 * n2;
     plan->rank = 3;
@@ -84,13 +86,13 @@ fftw_plan fftw_plan_dft_3d(int n0, int n1, int n2,
     return plan;
 }
 
-fftw_plan fftw_plan_dft(int rank, const int *n,
-                        fftw_complex *in, fftw_complex *out,
-                        int sign, unsigned flags) {
+fftw_plan fftw_plan_dft(int rank, const int *n, fftw_complex *in, fftw_complex *out, int sign,
+                        unsigned flags) {
     std::print("fftw_plan_dft: rank={}, sign={}, flags={}\n", rank, sign, flags);
 
     fftw_plan plan = static_cast<fftw_plan>(malloc(sizeof(fftw_plan_s)));
-    if (!plan) return nullptr;
+    if (!plan)
+        return nullptr;
 
     int total_n = 1;
     for (int i = 0; i < rank; ++i) {
@@ -110,18 +112,18 @@ fftw_plan fftw_plan_dft(int rank, const int *n,
 }
 
 // Real-to-complex transforms
-fftw_plan fftw_plan_dft_r2c_1d(int n, double *in, fftw_complex *out,
-                               unsigned flags) {
+fftw_plan fftw_plan_dft_r2c_1d(int n, double *in, fftw_complex *out, unsigned flags) {
     std::print("fftw_plan_dft_r2c_1d: n={}, flags={}\n", n, flags);
 
     fftw_plan plan = static_cast<fftw_plan>(malloc(sizeof(fftw_plan_s)));
-    if (!plan) return nullptr;
+    if (!plan)
+        return nullptr;
 
     plan->n = n;
     plan->rank = 1;
     plan->sign = FFTW_FORWARD;
     plan->flags = flags;
-    plan->in = reinterpret_cast<fftw_complex*>(in);
+    plan->in = reinterpret_cast<fftw_complex *>(in);
     plan->out = out;
     plan->is_r2c = true;
     plan->is_c2r = false;
@@ -129,19 +131,19 @@ fftw_plan fftw_plan_dft_r2c_1d(int n, double *in, fftw_complex *out,
     return plan;
 }
 
-fftw_plan fftw_plan_dft_c2r_1d(int n, fftw_complex *in, double *out,
-                               unsigned flags) {
+fftw_plan fftw_plan_dft_c2r_1d(int n, fftw_complex *in, double *out, unsigned flags) {
     std::print("fftw_plan_dft_c2r_1d: n={}, flags={}\n", n, flags);
 
     fftw_plan plan = static_cast<fftw_plan>(malloc(sizeof(fftw_plan_s)));
-    if (!plan) return nullptr;
+    if (!plan)
+        return nullptr;
 
     plan->n = n;
     plan->rank = 1;
     plan->sign = FFTW_BACKWARD;
     plan->flags = flags;
     plan->in = in;
-    plan->out = reinterpret_cast<fftw_complex*>(out);
+    plan->out = reinterpret_cast<fftw_complex *>(out);
     plan->is_r2c = false;
     plan->is_c2r = true;
 
@@ -153,8 +155,8 @@ static void basic_dft(const fftw_complex *input, fftw_complex *output, int n, in
     const double direction = (sign == FFTW_FORWARD) ? -1.0 : 1.0;
 
     for (int k = 0; k < n; ++k) {
-        output[k][0] = 0.0;  // Real part
-        output[k][1] = 0.0;  // Imaginary part
+        output[k][0] = 0.0; // Real part
+        output[k][1] = 0.0; // Imaginary part
 
         for (int j = 0; j < n; ++j) {
             const double angle = direction * 2.0 * std::numbers::pi * k * j / n;
@@ -179,7 +181,8 @@ static void basic_dft(const fftw_complex *input, fftw_complex *output, int n, in
 
 // Execution functions
 void fftw_execute(const fftw_plan p) {
-    if (!p) return;
+    if (!p)
+        return;
     std::print("fftw_execute: executing plan with n={}, sign={}\n", p->n, p->sign);
 
     if (p->is_r2c || p->is_c2r) {
@@ -191,7 +194,8 @@ void fftw_execute(const fftw_plan p) {
 }
 
 void fftw_execute_dft(const fftw_plan p, fftw_complex *in, fftw_complex *out) {
-    if (!p) return;
+    if (!p)
+        return;
     std::print("fftw_execute_dft: executing with new arrays\n");
 
     // TODO: Implement actual FFT computation with new arrays
@@ -201,7 +205,8 @@ void fftw_execute_dft(const fftw_plan p, fftw_complex *in, fftw_complex *out) {
 }
 
 void fftw_execute_dft_r2c(const fftw_plan p, double *in, fftw_complex *out) {
-    if (!p) return;
+    if (!p)
+        return;
     std::print("fftw_execute_dft_r2c: executing real-to-complex\n");
 
     // TODO: Implement real-to-complex FFT
@@ -214,7 +219,8 @@ void fftw_execute_dft_r2c(const fftw_plan p, double *in, fftw_complex *out) {
 }
 
 void fftw_execute_dft_c2r(const fftw_plan p, fftw_complex *in, double *out) {
-    if (!p) return;
+    if (!p)
+        return;
     std::print("fftw_execute_dft_c2r: executing complex-to-real\n");
 
     // TODO: Implement complex-to-real FFT
@@ -291,6 +297,5 @@ void fftw_cleanup_threads(void) {
     threads_initialized = 0;
     nthreads = 1;
 }
-
 
 } // extern "C"

@@ -1,7 +1,7 @@
 .PHONY: all build clean format test benchmark install deploy
 
 # Default target
-all: build
+all: build plugin run
 
 # Configuration
 BUILD_DIR = build
@@ -34,6 +34,20 @@ benchmark: build
 	@echo "Running benchmarks..."
 	cd $(BUILD_DIR) && ./benchmarks/efefte_benchmark || echo "Benchmarks not built yet"
 
+# Build plugins (macOS only)
+plugin: build
+	@echo "Building plugins..."
+	@if [ "$$(uname)" = "Darwin" ]; then \
+		echo "Building Audio Unit and Standalone app..."; \
+	else \
+		echo "Plugins only supported on macOS"; \
+	fi
+
+# Run standalone app in background
+run: plugin
+	@echo "Launching standalone spectrum analyser..."
+	@open ./$(BUILD_DIR)/EFEFTEStandalone.app
+
 # Install the library
 install: build
 	@echo "Installing EFEFTE..."
@@ -56,8 +70,10 @@ deploy: format build test
 # Help
 help:
 	@echo "Available targets:"
-	@echo "  all       - Build the project (default)"
+	@echo "  all       - Build the project and run standalone app (default)"
 	@echo "  build     - Build the project in release mode"
+	@echo "  plugin    - Build Audio Unit and standalone app (macOS only)"
+	@echo "  run       - Launch standalone spectrum analyser"
 	@echo "  debug     - Build the project in debug mode"
 	@echo "  clean     - Clean build artifacts"
 	@echo "  format    - Format source code with clang-format"
