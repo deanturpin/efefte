@@ -13,7 +13,7 @@ make  # Builds library, plugins, and launches spectrum analyser!
 
 ## Download
 
-**🌐 [Visit efefte.dev](https://efefte.dev)** for downloads and documentation
+**🌐 [Visit our website](https://deanturpin.github.io/efefte)** for downloads and documentation
 
 - **Audio Unit Plugin** - Logic Pro integration with real-time spectrum analysis
 - **Standalone App** - Independent spectrum analyser for development
