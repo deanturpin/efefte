@@ -1,4 +1,4 @@
-.PHONY: all build clean format test benchmark install deploy release
+.PHONY: all build clean format test benchmark install deploy release plugin run debug help
 
 # Default target
 all: build plugin run
@@ -70,8 +70,8 @@ deploy: format build test
 # Create a new release with downloadable assets
 release: clean build plugin
 	@echo "Creating release..."
-	@if [ ! -f $(BUILD_DIR)/EFEFTEAudioUnit.component ]; then echo "Audio Unit not found"; exit 1; fi
-	@if [ ! -f $(BUILD_DIR)/EFEFTEStandalone.app ]; then echo "Standalone app not found"; exit 1; fi
+	@if [ ! -d $(BUILD_DIR)/EFEFTEAudioUnit.component ]; then echo "Audio Unit not found"; exit 1; fi
+	@if [ ! -d $(BUILD_DIR)/EFEFTEStandalone.app ]; then echo "Standalone app not found"; exit 1; fi
 	@echo "Packaging Audio Unit..."
 	cd $(BUILD_DIR) && zip -r EFEFTE-AudioUnit-v$$(git describe --tags --abbrev=0 2>/dev/null || echo "1.0.0").zip EFEFTEAudioUnit.component
 	@echo "Packaging Standalone App..."
