@@ -7,11 +7,11 @@
     <key>CFBundleExecutable</key>
     <string>EFEFTEAudioUnit</string>
     <key>CFBundleIdentifier</key>
-    <string>com.efefte.audiounit</string>
+    <string>com.turbeaux.efefte.audiounit</string>
     <key>CFBundleInfoDictionaryVersion</key>
     <string>6.0</string>
     <key>CFBundleName</key>
-    <string>EFEFTE Spectrum Analyser</string>
+    <string>Turbeaux Sounds EFEFTE</string>
     <key>CFBundlePackageType</key>
     <string>BNDL</string>
     <key>CFBundleShortVersionString</key>
@@ -28,11 +28,11 @@
             <key>subtype</key>
             <string>efft</string>
             <key>manufacturer</key>
-            <string>Efft</string>
+            <string>Turb</string>
             <key>name</key>
-            <string>EFEFTE: Spectrum Analyser</string>
+            <string>Turbeaux Sounds EFEFTE</string>
             <key>description</key>
-            <string>Real-time FFT spectrum analyser using EFEFTE library</string>
+            <string>Turbeaux Sounds EFEFTE - Real-time FFT spectrum analyser</string>
             <key>version</key>
             <integer>1</integer>
             <key>factoryFunction</key>

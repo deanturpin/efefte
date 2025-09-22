@@ -24,9 +24,9 @@ target_compile_options(EFEFTEStandalone PRIVATE -fobjc-arc)
 
 # Set app properties
 set_target_properties(EFEFTEStandalone PROPERTIES
-    MACOSX_BUNDLE_INFO_STRING "EFEFTE Spectrum Analyser"
-    MACOSX_BUNDLE_GUI_IDENTIFIER "com.efefte.standalone"
-    MACOSX_BUNDLE_BUNDLE_NAME "EFEFTE Spectrum"
+    MACOSX_BUNDLE_INFO_STRING "Turbeaux Sounds EFEFTE - Spectrum Analyser"
+    MACOSX_BUNDLE_GUI_IDENTIFIER "com.turbeaux.efefte.standalone"
+    MACOSX_BUNDLE_BUNDLE_NAME "Turbeaux Sounds EFEFTE"
     MACOSX_BUNDLE_BUNDLE_VERSION "1.0"
     MACOSX_BUNDLE_SHORT_VERSION_STRING "1.0"
 )
