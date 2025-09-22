@@ -1,0 +1,59 @@
+# Build directories
+build/
+cmake-build-*/
+out/
+
+# Compiled objects and libraries
+*.o
+*.a
+*.so
+*.dylib
+*.dll
+*.lib
+
+# Executables
+*.exe
+*.out
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# CMake
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+compile_commands.json
+CTestTestfile.cmake
+_deps/
+
+# Documentation
+docs/html/
+docs/latex/
+
+# Temporary files
+*.tmp
+*.temp
+*.log
+
+# Profiling
+*.prof
+gmon.out
+
+# Core dumps
+core
+core.*
+
+# Python
+__pycache__/
+*.py[cod]
+
+# Package files
+*.deb
+*.rpm
+*.pkg
+*.dmg
