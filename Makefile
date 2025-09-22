@@ -69,8 +69,8 @@ dmg: clean build plugin
 	mkdir -p $(BUILD_DIR)/dmg-contents
 	cp -R $(BUILD_DIR)/EFEFTEAudioUnit.component $(BUILD_DIR)/dmg-contents/
 	cp -R $(BUILD_DIR)/EFEFTEStandalone.app $(BUILD_DIR)/dmg-contents/
-	ln -sf "/Library/Audio/Plug-Ins/Components" $(BUILD_DIR)/dmg-contents/
-	ln -sf "/Applications" $(BUILD_DIR)/dmg-contents/
+	ln -sf "$(HOME)/Library/Audio/Plug-Ins/Components" $(BUILD_DIR)/dmg-contents/Components
+	ln -sf "/Applications" $(BUILD_DIR)/dmg-contents/Applications
 	@echo "Creating DMG..."
 	hdiutil create -volname "Turbeaux Sounds EFEFTE" \
 		-srcfolder $(BUILD_DIR)/dmg-contents \

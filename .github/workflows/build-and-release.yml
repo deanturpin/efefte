@@ -37,8 +37,8 @@ jobs:
         mkdir -p build/dmg-contents
         cp -R build/EFEFTEAudioUnit.component build/dmg-contents/
         cp -R build/EFEFTEStandalone.app build/dmg-contents/
-        ln -sf "/Library/Audio/Plug-Ins/Components" build/dmg-contents/
-        ln -sf "/Applications" build/dmg-contents/
+        ln -sf "$HOME/Library/Audio/Plug-Ins/Components" build/dmg-contents/Components
+        ln -sf "/Applications" build/dmg-contents/Applications
         hdiutil create -volname "Turbeaux Sounds EFEFTE" \
           -srcfolder build/dmg-contents \
           -ov -format UDZO \
@@ -48,7 +48,9 @@ jobs:
       run: |
         cd build
         if [ -d "EFEFTEAudioUnit.component" ]; then
-          zip -r EFEFTE-AudioUnit-${{ github.sha }}.zip EFEFTEAudioUnit.component
+          VERSION_TAG="${{ github.ref_name }}"
+          VERSION="${VERSION_TAG#v}"  # Remove 'v' prefix if present
+          zip -r EFEFTE-AudioUnit-${VERSION:-latest}.zip EFEFTEAudioUnit.component
         else
           echo "Audio Unit not found, skipping..."
         fi
@@ -57,7 +59,9 @@ jobs:
       run: |
         cd build
         if [ -d "EFEFTEStandalone.app" ]; then
-          zip -r EFEFTE-Standalone-${{ github.sha }}.zip EFEFTEStandalone.app
+          VERSION_TAG="${{ github.ref_name }}"
+          VERSION="${VERSION_TAG#v}"  # Remove 'v' prefix if present
+          zip -r EFEFTE-Standalone-${VERSION:-latest}.zip EFEFTEStandalone.app
         else
           echo "Standalone app not found, skipping..."
         fi
@@ -66,13 +70,13 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: efefte-audiounit
-        path: build/EFEFTE-AudioUnit-${{ github.sha }}.zip
+        path: build/EFEFTE-AudioUnit-*.zip
 
     - name: Upload Standalone Artifact
       uses: actions/upload-artifact@v4
       with:
         name: efefte-standalone
-        path: build/EFEFTE-Standalone-${{ github.sha }}.zip
+        path: build/EFEFTE-Standalone-*.zip
 
     - name: Upload DMG Installer
       uses: actions/upload-artifact@v4
@@ -85,8 +89,8 @@ jobs:
       uses: softprops/action-gh-release@v1
       with:
         files: |
-          build/EFEFTE-AudioUnit-${{ github.sha }}.zip
-          build/EFEFTE-Standalone-${{ github.sha }}.zip
+          build/EFEFTE-AudioUnit-*.zip
+          build/EFEFTE-Standalone-*.zip
           build/TurbeauxSounds-EFEFTE-*.dmg
         body: |
           ## Turbeaux Sounds EFEFTE ${{ github.ref_name }}
