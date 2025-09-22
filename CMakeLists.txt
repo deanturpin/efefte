@@ -31,7 +31,7 @@ endif()
 include_directories(include)
 
 # Library target (our FFTW3 replacement)
-add_library(libefefte SHARED src/efefte.cxx)
+add_library(libefefte SHARED src/efefte.cxx src/test.cxx)
 set_target_properties(libefefte PROPERTIES
     OUTPUT_NAME efefte
     VERSION ${PROJECT_VERSION}

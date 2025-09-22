@@ -1,6 +1,8 @@
 #include "../include/efefte.h"
 #include <cstdlib>
 #include <cstring>
+#include <cmath>
+#include <numbers>
 #include <print>
 
 // Internal plan structure
@@ -146,16 +148,46 @@ fftw_plan fftw_plan_dft_c2r_1d(int n, fftw_complex *in, double *out,
     return plan;
 }
 
+// Basic DFT implementation (O(N²) - slow but correct)
+static void basic_dft(const fftw_complex *input, fftw_complex *output, int n, int sign) {
+    const double direction = (sign == FFTW_FORWARD) ? -1.0 : 1.0;
+
+    for (int k = 0; k < n; ++k) {
+        output[k][0] = 0.0;  // Real part
+        output[k][1] = 0.0;  // Imaginary part
+
+        for (int j = 0; j < n; ++j) {
+            const double angle = direction * 2.0 * std::numbers::pi * k * j / n;
+            const double cos_val = std::cos(angle);
+            const double sin_val = std::sin(angle);
+
+            // Complex multiplication: (a + bi) * (c + di) = (ac - bd) + (ad + bc)i
+            const double real_part = input[j][0] * cos_val - input[j][1] * sin_val;
+            const double imag_part = input[j][0] * sin_val + input[j][1] * cos_val;
+
+            output[k][0] += real_part;
+            output[k][1] += imag_part;
+        }
+
+        // For inverse transform, divide by N
+        if (sign == FFTW_BACKWARD) {
+            output[k][0] /= n;
+            output[k][1] /= n;
+        }
+    }
+}
+
 // Execution functions
 void fftw_execute(const fftw_plan p) {
     if (!p) return;
     std::print("fftw_execute: executing plan with n={}, sign={}\n", p->n, p->sign);
 
-    // TODO: Implement actual FFT computation
-    // For now, just copy input to output for testing
-    if (p->in != p->out) {
-        memcpy(p->out, p->in, p->n * sizeof(fftw_complex));
+    if (p->is_r2c || p->is_c2r) {
+        std::print("Real-to-complex transforms not yet implemented in basic DFT\n");
+        return;
     }
+
+    basic_dft(p->in, p->out, p->n, p->sign);
 }
 
 void fftw_execute_dft(const fftw_plan p, fftw_complex *in, fftw_complex *out) {
@@ -259,5 +291,6 @@ void fftw_cleanup_threads(void) {
     threads_initialized = 0;
     nthreads = 1;
 }
+
 
 } // extern "C"

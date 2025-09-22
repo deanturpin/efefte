@@ -2,6 +2,7 @@
 #include <numbers>
 #include <cmath>
 #include "../include/efefte.h"
+#include "../include/test.h"
 
 int main() {
     std::print("EFEFTE FFT\n");
@@ -19,12 +20,11 @@ int main() {
         return 1;
     }
 
-    // Generate test signal: sine wave
-    std::print("Generating test signal...\n");
-    for (int i = 0; i < N; ++i) {
-        input[i][0] = std::sin(2.0 * std::numbers::pi * i / N);  // Real part
-        input[i][1] = 0.0;                                       // Imaginary part
-    }
+    // Generate test signal: 440 Hz sine wave (A4 note)
+    std::print("Generating 440 Hz sine wave test signal...\n");
+    const double sample_rate = 1024.0;  // Hz
+    const double frequency = 440.0;     // Hz (A4 note)
+    efefte_generate_sine(input, N, frequency, sample_rate);
 
     // Create plan
     std::print("Creating FFT plan...\n");
@@ -41,15 +41,11 @@ int main() {
     std::print("Executing FFT...\n");
     fftw_execute(plan);
 
-    // Display first few results
-    std::print("First 5 FFT results:\n");
-    for (int i = 0; i < 5; ++i) {
-        std::print("  {}: {:.6f} + {:.6f}i\n", i, output[i][0], output[i][1]);
-    }
-
-    // Test with different arrays
-    std::print("\nTesting execute with different arrays...\n");
-    fftw_execute_dft(plan, input, output);
+    // Analyse spectrum
+    std::print("Spectrum Analysis:\n");
+    efefte_find_peaks(output, N, sample_rate);
+    std::print("\n");
+    efefte_print_spectrum(output, N, sample_rate, 10);
 
     // Clean up
     std::print("Cleaning up...\n");
