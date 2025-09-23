@@ -21,7 +21,7 @@ jobs:
         # CMAKE is already installed on GitHub runners
         echo "Using system cmake: $(cmake --version)"
 
-    - name: Build EFEFTE
+    - name: Build KEYQ
       run: |
         # Build everything in one step to avoid path issues
         make clean
@@ -35,22 +35,22 @@ jobs:
       run: |
         echo "Creating DMG installer..."
         mkdir -p build/dmg-contents
-        cp -R build/EFEFTEAudioUnit.component build/dmg-contents/
-        cp -R build/EFEFTEStandalone.app build/dmg-contents/
+        cp -R build/KEYQAudioUnit.component build/dmg-contents/
+        cp -R build/KEYQStandalone.app build/dmg-contents/
         echo "Creating installer app..."
-        osacompile -o "build/dmg-contents/Install EFEFTE.app" installer/Install.applescript
-        hdiutil create -volname "Turbeaux Sounds EFEFTE" \
+        osacompile -o "build/dmg-contents/Install KEYQ.app" installer/Install.applescript
+        hdiutil create -volname "Turbeaux Sounds KEYQ" \
           -srcfolder build/dmg-contents \
           -ov -format UDZO \
-          build/TurbeauxSounds-EFEFTE-${{ github.ref_name }}.dmg
+          build/TurbeauxSounds-KEYQ-${{ github.ref_name }}.dmg
 
     - name: Package Audio Unit
       run: |
         cd build
-        if [ -d "EFEFTEAudioUnit.component" ]; then
+        if [ -d "KEYQAudioUnit.component" ]; then
           VERSION_TAG="${{ github.ref_name }}"
           VERSION="${VERSION_TAG#v}"  # Remove 'v' prefix if present
-          zip -r EFEFTE-AudioUnit-${VERSION:-latest}.zip EFEFTEAudioUnit.component
+          zip -r KEYQ-AudioUnit-${VERSION:-latest}.zip KEYQAudioUnit.component
         else
           echo "Audio Unit not found, skipping..."
         fi
@@ -58,10 +58,10 @@ jobs:
     - name: Package Standalone App
       run: |
         cd build
-        if [ -d "EFEFTEStandalone.app" ]; then
+        if [ -d "KEYQStandalone.app" ]; then
           VERSION_TAG="${{ github.ref_name }}"
           VERSION="${VERSION_TAG#v}"  # Remove 'v' prefix if present
-          zip -r EFEFTE-Standalone-${VERSION:-latest}.zip EFEFTEStandalone.app
+          zip -r KEYQ-Standalone-${VERSION:-latest}.zip KEYQStandalone.app
         else
           echo "Standalone app not found, skipping..."
         fi
@@ -70,30 +70,30 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: efefte-audiounit
-        path: build/EFEFTE-AudioUnit-*.zip
+        path: build/KEYQ-AudioUnit-*.zip
 
     - name: Upload Standalone Artifact
       uses: actions/upload-artifact@v4
       with:
         name: efefte-standalone
-        path: build/EFEFTE-Standalone-*.zip
+        path: build/KEYQ-Standalone-*.zip
 
     - name: Upload DMG Installer
       uses: actions/upload-artifact@v4
       with:
         name: efefte-dmg
-        path: build/TurbeauxSounds-EFEFTE-*.dmg
+        path: build/TurbeauxSounds-KEYQ-*.dmg
 
     - name: Create Release
       if: startsWith(github.ref, 'refs/tags/v')
       uses: softprops/action-gh-release@v1
       with:
         files: |
-          build/EFEFTE-AudioUnit-*.zip
-          build/EFEFTE-Standalone-*.zip
-          build/TurbeauxSounds-EFEFTE-*.dmg
+          build/KEYQ-AudioUnit-*.zip
+          build/KEYQ-Standalone-*.zip
+          build/TurbeauxSounds-KEYQ-*.dmg
         body: |
-          ## Turbeaux Sounds EFEFTE ${{ github.ref_name }}
+          ## Turbeaux Sounds KEYQ ${{ github.ref_name }}
 
           🎵 **Audio Unit Plugin for Logic Pro**
           - Real-time FFT spectrum analysis
@@ -108,16 +108,16 @@ jobs:
           ### Easy Installation
 
           **💿 DMG Installer (Recommended):**
-          1. Download `TurbeauxSounds-EFEFTE-*.dmg`
+          1. Download `TurbeauxSounds-KEYQ-*.dmg`
           2. Double-click to mount
-          3. Drag `EFEFTEAudioUnit.component` to `Components` folder
-          4. Drag `EFEFTEStandalone.app` to `Applications` folder
+          3. Drag `KEYQAudioUnit.component` to `Components` folder
+          4. Drag `KEYQStandalone.app` to `Applications` folder
           5. Restart Logic Pro
 
           **📦 Manual Installation:**
           - Download individual zip files and install manually
 
-          Built with EFEFTE FFT Library v${{ github.ref_name }}
+          Built with KEYQ FFT Library v${{ github.ref_name }}
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 

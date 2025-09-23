@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.25)
 
-project(efefte
+project(keyq
     VERSION 0.1.0
     DESCRIPTION "High-performance FFT library as drop-in FFTW3 replacement"
     LANGUAGES CXX)
@@ -32,30 +32,30 @@ endif()
 include_directories(include)
 
 # Library target (our FFTW3 replacement)
-add_library(libefefte SHARED src/efefte.cxx src/test.cxx)
-set_target_properties(libefefte PROPERTIES
-    OUTPUT_NAME efefte
+add_library(libkeyq SHARED src/keyq.cxx src/test.cxx)
+set_target_properties(libkeyq PROPERTIES
+    OUTPUT_NAME keyq
     VERSION ${PROJECT_VERSION}
     SOVERSION ${PROJECT_VERSION_MAJOR})
 
 # Main executable (test application)
-add_executable(efefte src/main.cxx)
-target_link_libraries(efefte libefefte)
+add_executable(keyq src/main.cxx)
+target_link_libraries(keyq libkeyq)
 
 # Optional: Link with real FFTW3 for comparison benchmarks
 if(FFTW3_FOUND)
-    add_executable(efefte_benchmark src/main.cxx)
-    target_link_libraries(efefte_benchmark PkgConfig::FFTW3)
-    target_compile_definitions(efefte_benchmark PRIVATE USE_REAL_FFTW3)
+    add_executable(keyq_benchmark src/main.cxx)
+    target_link_libraries(keyq_benchmark PkgConfig::FFTW3)
+    target_compile_definitions(keyq_benchmark PRIVATE USE_REAL_FFTW3)
 endif()
 
 # Install targets
-install(TARGETS efefte libefefte
+install(TARGETS keyq libkeyq)
     RUNTIME DESTINATION bin
     LIBRARY DESTINATION lib
     ARCHIVE DESTINATION lib)
 
-install(FILES include/efefte.h DESTINATION include)
+install(FILES include/keyq.h DESTINATION include)
 
 # Testing and benchmarking (will be added later)
 enable_testing()
@@ -79,10 +79,10 @@ endif()
 # Package configuration
 include(CMakePackageConfigHelpers)
 write_basic_package_version_file(
-    "${CMAKE_CURRENT_BINARY_DIR}/efefteConfigVersion.cmake"
+    "${CMAKE_CURRENT_BINARY_DIR}/keyqConfigVersion.cmake"
     VERSION ${PROJECT_VERSION}
     COMPATIBILITY SameMajorVersion)
 
 install(FILES
-    "${CMAKE_CURRENT_BINARY_DIR}/efefteConfigVersion.cmake"
-    DESTINATION lib/cmake/efefte)
+    "${CMAKE_CURRENT_BINARY_DIR}/keyqConfigVersion.cmake"
+    DESTINATION lib/cmake/keyq)

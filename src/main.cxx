@@ -2,11 +2,11 @@
 #include <numbers>
 #include <print>
 
-#include "../include/efefte.h"
+#include "../include/keyq.h"
 #include "../include/test.h"
 
 int main() {
-    std::print("EFEFTE FFT\n");
+    std::print("KEYQ FFT\n");
     std::print("Creating an FFTW3-compatible API from scratch\n\n");
 
     // Basic test case
@@ -25,7 +25,7 @@ int main() {
     std::print("Generating 440 Hz sine wave test signal...\n");
     const double sample_rate = 1024.0; // Hz
     const double frequency = 440.0;    // Hz (A4 note)
-    efefte_generate_sine(input, N, frequency, sample_rate);
+    keyq_generate_sine(input, N, frequency, sample_rate);
 
     // Create plan
     std::print("Creating FFT plan...\n");
@@ -44,9 +44,9 @@ int main() {
 
     // Analyse spectrum
     std::print("Spectrum Analysis:\n");
-    efefte_find_peaks(output, N, sample_rate);
+    keyq_find_peaks(output, N, sample_rate);
     std::print("\n");
-    efefte_print_spectrum(output, N, sample_rate, 10);
+    keyq_print_spectrum(output, N, sample_rate, 10);
 
     // Clean up
     std::print("Cleaning up...\n");

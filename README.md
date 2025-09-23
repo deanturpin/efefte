@@ -10,24 +10,24 @@ A drop in replacement for FFTW3 written in modern latest C++ with a focus on hig
 
 ```bash
 # Clone and build
-git clone https://github.com/deanturpin/efefte.git
-cd efefte
+git clone https://github.com/deanturpin/keyq.git
+cd keyq
 make  # Builds library, plugins, and launches spectrum analyser!
 ```
 
 ## Download
 
-**🌐 [Visit our website](https://deanturpin.github.io/efefte)** for downloads and documentation
+**🌐 [Visit our website](https://deanturpin.github.io/keyq)** for downloads and documentation
 
 - **Audio Unit Plugin** - Logic Pro integration with real-time spectrum analysis
 - **Standalone App** - Independent spectrum analyser for development
 - **Developer Library** - C++ library with FFTW3-compatible API
 
-## What is EFEFTE?
+## What is KEYQ?
 
-EFEFTE is a modern FFT library and spectrum analyser built with the latest C++ features. Originally designed as a high-performance alternative to FFTW3, it has evolved into a comprehensive audio analysis toolkit.
+KEYQ is a modern FFT library and spectrum analyser built with the latest C++ features. Originally designed as a high-performance alternative to FFTW3, it has evolved into a comprehensive audio analysis toolkit.
 
-Based on the original [DFT project](https://github.com/deanturpin/dft), EFEFTE takes the core concepts and expands them into a full-featured library and plugin suite.
+Based on the original [DFT project](https://github.com/deanturpin/dft), KEYQ takes the core concepts and expands them into a full-featured library and plugin suite.
 
 ## Dependencies to Install
 
@@ -77,14 +77,14 @@ Based on the original [DFT project](https://github.com/deanturpin/dft), EFEFTE t
 
 ### Drop-in FFTW3 Replacement Strategy
 - **Battle-tested API** - leverage FFTW3's proven interface design
-- **Zero migration effort** - change `#include <fftw3.h>` to `#include <efefte.h>`
+- **Zero migration effort** - change `#include <fftw3.h>` to `#include <keyq.h>`
 - **Instant benchmarking** - easy performance comparison in existing codebases
 - **Familiar workflow** - no learning curve for experienced developers
 
 ### Modern C++ Wrapper (Optional)
 
 ```cpp
-namespace efefte {
+namespace keyq {
     using plan = fftw_plan;  // or custom type
 
     auto plan_dft_1d(int n, std::complex<double>* in, std::complex<double>* out,
@@ -109,22 +109,22 @@ extern "C" {
     void fftw_destroy_plan(fftw_plan plan);
 
     // Or prefixed alternative
-    efefte_plan efefte_plan_dft_1d(int n, efefte_complex *in, efefte_complex *out,
+    keyq_plan keyq_plan_dft_1d(int n, keyq_complex *in, keyq_complex *out,
                                    int sign, unsigned flags);
-    void efefte_execute(efefte_plan plan);
-    void efefte_destroy_plan(efefte_plan plan);
+    void keyq_execute(keyq_plan plan);
+    void keyq_destroy_plan(keyq_plan plan);
 }
 ```
 
 ## APT Package Configuration
 
-- **Package Name**: `libefefte-dev`
+- **Package Name**: `libkeyq-dev`
 - **Dependencies**: `libc6-dev, cmake`
 - **Files**:
-  - Headers: `/usr/include/efefte/`
-  - Library: `/usr/lib/x86_64-linux-gnu/libefefte.so`
-  - CMake config: `/usr/lib/x86_64-linux-gnu/cmake/efefte/`
-  - Documentation: `/usr/share/doc/libefefte-dev/`
+  - Headers: `/usr/include/keyq/`
+  - Library: `/usr/lib/x86_64-linux-gnu/libkeyq.so`
+  - CMake config: `/usr/lib/x86_64-linux-gnu/cmake/keyq/`
+  - Documentation: `/usr/share/doc/libkeyq-dev/`
 
 ## Build System Requirements
 
@@ -182,7 +182,7 @@ extern "C" {
 - **Distributed Computing**: MPI support for large transforms
 - **Real-time Processing**: Lock-free ring buffer integration
 - **Audio Applications**: Jack/ALSA integration
-- **Logic Pro Plugin**: EFEFTE Audio Unit wrapper for real-time spectral processing
+- **Logic Pro Plugin**: KEYQ Audio Unit wrapper for real-time spectral processing
 - **Web Assembly**: Browser-based FFT processing
 
 ## Audio Unit Plugin Architecture
@@ -295,4 +295,4 @@ extern "C" {
 4. Performance optimisation
 5. Packaging and distribution
 6. Advanced features (GPU, distributed)
-7. Logic Pro EFEFTE Audio Unit plugin development
+7. Logic Pro KEYQ Audio Unit plugin development

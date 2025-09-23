@@ -7,8 +7,8 @@
 extern "C" {
 
 // Test signal generation functions
-void efefte_generate_sine(fftw_complex *signal, int n, double frequency, double sample_rate) {
-    std::print("efefte_generate_sine: n={}, freq={} Hz, sample_rate={} Hz\n", n, frequency,
+void keyq_generate_sine(fftw_complex *signal, int n, double frequency, double sample_rate) {
+    std::print("keyq_generate_sine: n={}, freq={} Hz, sample_rate={} Hz\n", n, frequency,
                sample_rate);
 
     for (int i = 0; i < n; ++i) {
@@ -19,8 +19,8 @@ void efefte_generate_sine(fftw_complex *signal, int n, double frequency, double 
     }
 }
 
-void efefte_generate_chirp(fftw_complex *signal, int n, double f0, double f1, double sample_rate) {
-    std::print("efefte_generate_chirp: n={}, f0={} Hz, f1={} Hz, sample_rate={} Hz\n", n, f0, f1,
+void keyq_generate_chirp(fftw_complex *signal, int n, double f0, double f1, double sample_rate) {
+    std::print("keyq_generate_chirp: n={}, f0={} Hz, f1={} Hz, sample_rate={} Hz\n", n, f0, f1,
                sample_rate);
 
     double duration = static_cast<double>(n) / sample_rate;
@@ -35,8 +35,8 @@ void efefte_generate_chirp(fftw_complex *signal, int n, double f0, double f1, do
     }
 }
 
-void efefte_generate_noise(fftw_complex *signal, int n, double amplitude) {
-    std::print("efefte_generate_noise: n={}, amplitude={}\n", n, amplitude);
+void keyq_generate_noise(fftw_complex *signal, int n, double amplitude) {
+    std::print("keyq_generate_noise: n={}, amplitude={}\n", n, amplitude);
 
     // Simple pseudo-random noise (not cryptographically secure)
     static unsigned int seed = 12345;
@@ -55,11 +55,11 @@ void efefte_generate_noise(fftw_complex *signal, int n, double amplitude) {
 }
 
 // Analysis helper functions
-double efefte_magnitude(const fftw_complex value) {
+double keyq_magnitude(const fftw_complex value) {
     return std::sqrt(value[0] * value[0] + value[1] * value[1]);
 }
 
-void efefte_print_spectrum(const fftw_complex *spectrum, int n, double sample_rate, int max_bins) {
+void keyq_print_spectrum(const fftw_complex *spectrum, int n, double sample_rate, int max_bins) {
     std::print("Spectrum analysis (showing {} bins):\n", max_bins);
     std::print("Bin  Frequency  Magnitude\n");
     std::print("---  ---------  ---------\n");
@@ -68,12 +68,12 @@ void efefte_print_spectrum(const fftw_complex *spectrum, int n, double sample_ra
 
     for (int i = 0; i < bins_to_show; ++i) {
         double frequency = static_cast<double>(i) * sample_rate / n;
-        double magnitude = efefte_magnitude(spectrum[i]);
+        double magnitude = keyq_magnitude(spectrum[i]);
         std::print("{:3d}  {:8.2f}   {:8.6f}\n", i, frequency, magnitude);
     }
 }
 
-void efefte_find_peaks(const fftw_complex *spectrum, int n, double sample_rate) {
+void keyq_find_peaks(const fftw_complex *spectrum, int n, double sample_rate) {
     std::print("Finding spectral peaks...\n");
 
     double max_magnitude = 0.0;
@@ -81,7 +81,7 @@ void efefte_find_peaks(const fftw_complex *spectrum, int n, double sample_rate) 
 
     // Only check positive frequencies (first half of spectrum)
     for (int i = 1; i < n / 2; ++i) {
-        double magnitude = efefte_magnitude(spectrum[i]);
+        double magnitude = keyq_magnitude(spectrum[i]);
         if (magnitude > max_magnitude) {
             max_magnitude = magnitude;
             max_bin = i;

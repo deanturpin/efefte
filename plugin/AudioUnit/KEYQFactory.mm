@@ -1,15 +1,15 @@
 #import <AudioUnit/AUAudioUnit.h>
 #import <AVFoundation/AVFoundation.h>
-#include "EFEFTEAudioUnit.h"
+#include "KEYQAudioUnit.h"
 
-@interface EFEFTEAudioUnitWrapper : AUAudioUnit
-@property (nonatomic) EFEFTEAudioUnit* cppAudioUnit;
+@interface KEYQAudioUnitWrapper : AUAudioUnit
+@property (nonatomic) KEYQAudioUnit* cppAudioUnit;
 @property (nonatomic, strong) AUAudioUnitBus* outputBus;
 @property (nonatomic, strong) AUAudioUnitBusArray* inputBusArray;
 @property (nonatomic, strong) AUAudioUnitBusArray* outputBusArray;
 @end
 
-@implementation EFEFTEAudioUnitWrapper {
+@implementation KEYQAudioUnitWrapper {
     AVAudioPCMBuffer* _inputBuffer;
 }
 
@@ -20,7 +20,7 @@
 
     if (self) {
         // Create C++ Audio Unit
-        _cppAudioUnit = new EFEFTEAudioUnit();
+        _cppAudioUnit = new KEYQAudioUnit();
 
         // Create default format
         AVAudioFormat* format = [[AVAudioFormat alloc] initStandardFormatWithSampleRate:44100
@@ -69,7 +69,7 @@
 }
 
 - (AUInternalRenderBlock)internalRenderBlock {
-    __block EFEFTEAudioUnit* cppUnit = _cppAudioUnit;
+    __block KEYQAudioUnit* cppUnit = _cppAudioUnit;
 
     return ^AUAudioUnitStatus(AudioUnitRenderActionFlags* actionFlags,
                              const AudioTimeStamp* timestamp,
@@ -87,7 +87,7 @@
             return err;
         }
 
-        // Process with EFEFTE
+        // Process with KEYQ
         cppUnit->ProcessBufferLists(&pullFlags, timestamp, frameCount, outputData);
 
         return noErr;
@@ -97,8 +97,8 @@
 @end
 
 // Factory function
-extern "C" void* EFEFTEAudioUnitFactory(const AudioComponentDescription* inDesc) {
-    EFEFTEAudioUnitWrapper* audioUnit = [[EFEFTEAudioUnitWrapper alloc]
+extern "C" void* KEYQAudioUnitFactory(const AudioComponentDescription* inDesc) {
+    KEYQAudioUnitWrapper* audioUnit = [[KEYQAudioUnitWrapper alloc]
                                          initWithComponentDescription:*inDesc
                                          options:0
                                          error:nil];

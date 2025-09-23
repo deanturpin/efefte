@@ -7,14 +7,14 @@
 #include "../../include/efefte.h"
 
 // Audio Unit component description
-#define EFEFTE_COMP_TYPE 'aufx'  // Effect type
-#define EFEFTE_COMP_SUBTYPE 'efft'
-#define EFEFTE_COMP_MANUF 'Efft'
+#define KEYQ_COMP_TYPE 'aufx'  // Effect type
+#define KEYQ_COMP_SUBTYPE 'efft'
+#define KEYQ_COMP_MANUF 'Efft'
 
-class EFEFTEAudioUnit {
+class KEYQAudioUnit {
 public:
-    EFEFTEAudioUnit();
-    ~EFEFTEAudioUnit();
+    KEYQAudioUnit();
+    ~KEYQAudioUnit();
 
     // Core Audio Unit functions
     OSStatus Initialize();

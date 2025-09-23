@@ -5,13 +5,13 @@
     <key>CFBundleDevelopmentRegion</key>
     <string>en</string>
     <key>CFBundleExecutable</key>
-    <string>EFEFTEAudioUnit</string>
+    <string>KEYQAudioUnit</string>
     <key>CFBundleIdentifier</key>
-    <string>com.turbeaux.efefte.audiounit</string>
+    <string>com.turbeaux.keyq.audiounit</string>
     <key>CFBundleInfoDictionaryVersion</key>
     <string>6.0</string>
     <key>CFBundleName</key>
-    <string>Turbeaux Sounds EFEFTE</string>
+    <string>Turbeaux Sounds KEYQ</string>
     <key>CFBundlePackageType</key>
     <string>BNDL</string>
     <key>CFBundleShortVersionString</key>
@@ -26,17 +26,17 @@
             <key>type</key>
             <string>aufx</string>
             <key>subtype</key>
-            <string>efft</string>
+            <string>keyq</string>
             <key>manufacturer</key>
             <string>Turb</string>
             <key>name</key>
-            <string>Turbeaux Sounds EFEFTE</string>
+            <string>Turbeaux Sounds KEYQ</string>
             <key>description</key>
-            <string>Turbeaux Sounds EFEFTE - Real-time FFT spectrum analyser</string>
+            <string>Turbeaux Sounds KEYQ - Real-time FFT spectrum analyser</string>
             <key>version</key>
             <integer>1</integer>
             <key>factoryFunction</key>
-            <string>EFEFTEAudioUnitFactory</string>
+            <string>KEYQAudioUnitFactory</string>
             <key>sandboxSafe</key>
             <true/>
         </dict>

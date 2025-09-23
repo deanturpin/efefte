@@ -1,11 +1,11 @@
--- Turbeaux Sounds EFEFTE Installer
+-- Turbeaux Sounds KEYQ Installer
 
 on run
     set dmgPath to (path to me as text)
     set posixPath to POSIX path of dmgPath
     set installerDir to do shell script "dirname " & quoted form of posixPath
 
-    display dialog "This will install Turbeaux Sounds EFEFTE Audio Unit plugin and Standalone app." buttons {"Cancel", "Install"} default button 2 with title "Turbeaux Sounds EFEFTE Installer"
+    display dialog "This will install Turbeaux Sounds KEYQ Audio Unit plugin and Standalone app." buttons {"Cancel", "Install"} default button 2 with title "Turbeaux Sounds KEYQ Installer"
 
     if button returned of result is "Install" then
         -- Create Components directory if needed
@@ -13,7 +13,7 @@ on run
 
         -- Install Audio Unit
         try
-            do shell script "cp -R " & quoted form of (installerDir & "/EFEFTEAudioUnit.component") & " ~/Library/Audio/Plug-Ins/Components/"
+            do shell script "cp -R " & quoted form of (installerDir & "/KEYQAudioUnit.component") & " ~/Library/Audio/Plug-Ins/Components/"
             set audioUnitInstalled to true
         on error
             set audioUnitInstalled to false
@@ -21,7 +21,7 @@ on run
 
         -- Install Standalone App (may require admin)
         try
-            do shell script "cp -R " & quoted form of (installerDir & "/EFEFTEStandalone.app") & " /Applications/" with administrator privileges
+            do shell script "cp -R " & quoted form of (installerDir & "/KEYQStandalone.app") & " /Applications/" with administrator privileges
             set standaloneInstalled to true
         on error
             set standaloneInstalled to false

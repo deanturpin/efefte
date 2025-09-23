@@ -146,7 +146,7 @@
             }
         }];
     } else {
-        NSLog(@"EFEFTE Standalone: Audio engine started successfully");
+        NSLog(@"KEYQ Standalone: Audio engine started successfully");
     }
 }
 
@@ -173,7 +173,7 @@
                                             backing:NSBackingStoreBuffered
                                               defer:NO];
 
-    [_window setTitle:@"EFEFTE Spectrum Analyser"];
+    [_window setTitle:@"KEYQ Spectrum Analyser"];
     [_window center];
 
     // Create spectrum view
@@ -188,7 +188,7 @@
 
     // Add info label
     NSTextField* infoLabel = [[NSTextField alloc] initWithFrame:NSMakeRect(10, 10, 300, 20)];
-    [infoLabel setStringValue:@"EFEFTE FFT Library - Real-time Spectrum"];
+    [infoLabel setStringValue:@"KEYQ FFT Library - Real-time Spectrum"];
     [infoLabel setBezeled:NO];
     [infoLabel setDrawsBackground:NO];
     [infoLabel setEditable:NO];

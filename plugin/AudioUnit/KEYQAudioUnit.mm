@@ -1,11 +1,11 @@
 #import <Foundation/Foundation.h>
 #import <AudioToolbox/AudioToolbox.h>
-#include "EFEFTEAudioUnit.h"
+#include "KEYQAudioUnit.h"
 #include <cmath>
 #include <algorithm>
 
 // Constructor
-EFEFTEAudioUnit::EFEFTEAudioUnit()
+KEYQAudioUnit::KEYQAudioUnit()
     : fftPlan(nullptr),
       fftInput(nullptr),
       fftOutput(nullptr),
@@ -31,7 +31,7 @@ EFEFTEAudioUnit::EFEFTEAudioUnit()
 }
 
 // Destructor
-EFEFTEAudioUnit::~EFEFTEAudioUnit() {
+KEYQAudioUnit::~KEYQAudioUnit() {
     if (fftPlan) {
         fftw_destroy_plan(fftPlan);
     }
@@ -44,21 +44,21 @@ EFEFTEAudioUnit::~EFEFTEAudioUnit() {
 }
 
 // Initialize
-OSStatus EFEFTEAudioUnit::Initialize() {
-    NSLog(@"EFEFTE Audio Unit: Initialize");
+OSStatus KEYQAudioUnit::Initialize() {
+    NSLog(@"KEYQ Audio Unit: Initialize");
     Reset();
     return noErr;
 }
 
 // Uninitialize
-OSStatus EFEFTEAudioUnit::Uninitialize() {
-    NSLog(@"EFEFTE Audio Unit: Uninitialize");
+OSStatus KEYQAudioUnit::Uninitialize() {
+    NSLog(@"KEYQ Audio Unit: Uninitialize");
     return noErr;
 }
 
 // Reset
-OSStatus EFEFTEAudioUnit::Reset() {
-    NSLog(@"EFEFTE Audio Unit: Reset");
+OSStatus KEYQAudioUnit::Reset() {
+    NSLog(@"KEYQ Audio Unit: Reset");
 
     // Clear ring buffer
     std::fill(ringBuffer.begin(), ringBuffer.end(), 0.0f);
@@ -72,7 +72,7 @@ OSStatus EFEFTEAudioUnit::Reset() {
 }
 
 // Create Hann window
-void EFEFTEAudioUnit::CreateHannWindow() {
+void KEYQAudioUnit::CreateHannWindow() {
     windowFunction.resize(kFFTSize);
     for (int i = 0; i < kFFTSize; ++i) {
         windowFunction[i] = 0.5f * (1.0f - cosf(2.0f * M_PI * i / (kFFTSize - 1)));
@@ -80,7 +80,7 @@ void EFEFTEAudioUnit::CreateHannWindow() {
 }
 
 // Process audio
-OSStatus EFEFTEAudioUnit::ProcessBufferLists(AudioUnitRenderActionFlags* ioActionFlags,
+OSStatus KEYQAudioUnit::ProcessBufferLists(AudioUnitRenderActionFlags* ioActionFlags,
                                              const AudioTimeStamp* inTimeStamp,
                                              UInt32 inNumberFrames,
                                              AudioBufferList* ioData) {
@@ -108,7 +108,7 @@ OSStatus EFEFTEAudioUnit::ProcessBufferLists(AudioUnitRenderActionFlags* ioActio
 }
 
 // Perform FFT analysis
-void EFEFTEAudioUnit::ProcessFFT() {
+void KEYQAudioUnit::ProcessFFT() {
     // Copy windowed samples to FFT input
     int readIndex = (writeIndex - kFFTSize + ringBuffer.size()) % ringBuffer.size();
 
@@ -126,7 +126,7 @@ void EFEFTEAudioUnit::ProcessFFT() {
 }
 
 // Update spectrum magnitudes
-void EFEFTEAudioUnit::UpdateSpectrum() {
+void KEYQAudioUnit::UpdateSpectrum() {
     std::lock_guard<std::mutex> lock(spectrumMutex);
 
     // Calculate magnitudes for positive frequencies only
@@ -144,7 +144,7 @@ void EFEFTEAudioUnit::UpdateSpectrum() {
 }
 
 // Get spectrum data for UI
-void EFEFTEAudioUnit::GetSpectrumData(float* magnitudes, int binCount) {
+void KEYQAudioUnit::GetSpectrumData(float* magnitudes, int binCount) {
     std::lock_guard<std::mutex> lock(spectrumMutex);
 
     int copyCount = std::min(binCount, (int)spectrumMagnitudes.size());
@@ -152,7 +152,7 @@ void EFEFTEAudioUnit::GetSpectrumData(float* magnitudes, int binCount) {
 }
 
 // Get property info
-OSStatus EFEFTEAudioUnit::GetPropertyInfo(AudioUnitPropertyID inID,
+OSStatus KEYQAudioUnit::GetPropertyInfo(AudioUnitPropertyID inID,
                                           AudioUnitScope inScope,
                                           AudioUnitElement inElement,
                                           UInt32* outDataSize,
@@ -170,7 +170,7 @@ OSStatus EFEFTEAudioUnit::GetPropertyInfo(AudioUnitPropertyID inID,
 }
 
 // Get property
-OSStatus EFEFTEAudioUnit::GetProperty(AudioUnitPropertyID inID,
+OSStatus KEYQAudioUnit::GetProperty(AudioUnitPropertyID inID,
                                       AudioUnitScope inScope,
                                       AudioUnitElement inElement,
                                       void* outData) {
@@ -178,7 +178,7 @@ OSStatus EFEFTEAudioUnit::GetProperty(AudioUnitPropertyID inID,
 }
 
 // Set property
-OSStatus EFEFTEAudioUnit::SetProperty(AudioUnitPropertyID inID,
+OSStatus KEYQAudioUnit::SetProperty(AudioUnitPropertyID inID,
                                       AudioUnitScope inScope,
                                       AudioUnitElement inElement,
                                       const void* inData,
