@@ -37,8 +37,8 @@ jobs:
         mkdir -p build/dmg-contents
         cp -R build/EFEFTEAudioUnit.component build/dmg-contents/
         cp -R build/EFEFTEStandalone.app build/dmg-contents/
-        ln -sf "$HOME/Library/Audio/Plug-Ins/Components" build/dmg-contents/Components
-        ln -sf "/Applications" build/dmg-contents/Applications
+        echo "Creating installer app..."
+        osacompile -o "build/dmg-contents/Install EFEFTE.app" installer/Install.applescript
         hdiutil create -volname "Turbeaux Sounds EFEFTE" \
           -srcfolder build/dmg-contents \
           -ov -format UDZO \

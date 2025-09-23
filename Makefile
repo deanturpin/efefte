@@ -60,7 +60,7 @@ debug:
 	cd $(BUILD_DIR) && cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_EXPORT_COMPILE_COMMANDS=ON ..
 	cd $(BUILD_DIR) && make -j$(shell nproc 2>/dev/null || sysctl -n hw.ncpu 2>/dev/null || echo 4)
 
-# Create DMG installer with drag-and-drop interface
+# Create DMG installer with installer app
 dmg: clean build plugin
 	@echo "Creating DMG installer..."
 	@if [ ! -d $(BUILD_DIR)/EFEFTEAudioUnit.component ]; then echo "Audio Unit not found"; exit 1; fi
@@ -69,8 +69,8 @@ dmg: clean build plugin
 	mkdir -p $(BUILD_DIR)/dmg-contents
 	cp -R $(BUILD_DIR)/EFEFTEAudioUnit.component $(BUILD_DIR)/dmg-contents/
 	cp -R $(BUILD_DIR)/EFEFTEStandalone.app $(BUILD_DIR)/dmg-contents/
-	ln -sf "$(HOME)/Library/Audio/Plug-Ins/Components" $(BUILD_DIR)/dmg-contents/Components
-	ln -sf "/Applications" $(BUILD_DIR)/dmg-contents/Applications
+	@echo "Creating installer app..."
+	osacompile -o $(BUILD_DIR)/dmg-contents/Install\ EFEFTE.app installer/Install.applescript
 	@echo "Creating DMG..."
 	hdiutil create -volname "Turbeaux Sounds EFEFTE" \
 		-srcfolder $(BUILD_DIR)/dmg-contents \
