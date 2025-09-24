@@ -72,11 +72,11 @@ dmg: clean build plugin
 	@echo "Creating installer app..."
 	osacompile -o $(BUILD_DIR)/dmg-contents/Install\ KEYQ.app installer/Install.applescript
 	@echo "Creating DMG..."
-	hdiutil create -volname "Turbeaux Sounds KEYQ" \
+	hdiutil create -volname "KEYQ" \
 		-srcfolder $(BUILD_DIR)/dmg-contents \
 		-ov -format UDZO \
-		$(BUILD_DIR)/TurbeauxSounds-KEYQ-v$$(git describe --tags --abbrev=0 2>/dev/null | sed 's/v//' || echo "1.0.0").dmg
-	@echo "DMG created: $(BUILD_DIR)/TurbeauxSounds-KEYQ-*.dmg"
+		$(BUILD_DIR)/KEYQ-v$$(git describe --tags --abbrev=0 2>/dev/null | sed 's/v//' || echo "1.0.0").dmg
+	@echo "DMG created: $(BUILD_DIR)/KEYQ-*.dmg"
 
 # Deploy target with auto-commit and push
 deploy: format build test

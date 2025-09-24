@@ -39,10 +39,10 @@ jobs:
         cp -R build/KEYQStandalone.app build/dmg-contents/
         echo "Creating installer app..."
         osacompile -o "build/dmg-contents/Install KEYQ.app" installer/Install.applescript
-        hdiutil create -volname "Turbeaux Sounds KEYQ" \
+        hdiutil create -volname "KEYQ" \
           -srcfolder build/dmg-contents \
           -ov -format UDZO \
-          build/TurbeauxSounds-KEYQ-${{ github.ref_name }}.dmg
+          build/KEYQ-${{ github.ref_name }}.dmg
 
     - name: Package Audio Unit
       run: |
@@ -69,20 +69,20 @@ jobs:
     - name: Upload Audio Unit Artifact
       uses: actions/upload-artifact@v4
       with:
-        name: efefte-audiounit
+        name: keyq-audiounit
         path: build/KEYQ-AudioUnit-*.zip
 
     - name: Upload Standalone Artifact
       uses: actions/upload-artifact@v4
       with:
-        name: efefte-standalone
+        name: keyq-standalone
         path: build/KEYQ-Standalone-*.zip
 
     - name: Upload DMG Installer
       uses: actions/upload-artifact@v4
       with:
-        name: efefte-dmg
-        path: build/TurbeauxSounds-KEYQ-*.dmg
+        name: keyq-dmg
+        path: build/KEYQ-*.dmg
 
     - name: Create Release
       if: startsWith(github.ref, 'refs/tags/v')
@@ -91,7 +91,7 @@ jobs:
         files: |
           build/KEYQ-AudioUnit-*.zip
           build/KEYQ-Standalone-*.zip
-          build/TurbeauxSounds-KEYQ-*.dmg
+          build/KEYQ-*.dmg
         body: |
           ## Turbeaux Sounds KEYQ ${{ github.ref_name }}
 
