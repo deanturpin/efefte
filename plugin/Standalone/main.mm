@@ -39,14 +39,28 @@
     [[NSColor blackColor] setFill];
     NSRectFill(dirtyRect);
 
-    // Draw spectrum bars
+    // Draw spectrum bars with simple logarithmic scaling
     NSRect bounds = self.bounds;
-    float barWidth = bounds.size.width / _magnitudes.size();
 
     [[NSColor greenColor] setFill];
-    for (size_t i = 0; i < _magnitudes.size(); ++i) {
-        float height = (_magnitudes[i] + 60.0f) / 60.0f * bounds.size.height; // Normalize dB
-        NSRect bar = NSMakeRect(i * barWidth, 0, barWidth - 1, height);
+
+    // Simple log scaling - just draw the first 128 bins with increasing width
+    int numBins = std::min(128, (int)_magnitudes.size());
+    for (int i = 1; i < numBins; ++i) { // Start from 1 to avoid log(0)
+        // Map bin index logarithmically to screen position
+        float logPos = log10f((float)i / numBins * 99.0f + 1.0f) / 2.0f; // log10(1) to log10(100)
+        float logPosNext = log10f((float)(i+1) / numBins * 99.0f + 1.0f) / 2.0f;
+
+        float xPos = logPos * bounds.size.width;
+        float xPosNext = logPosNext * bounds.size.width;
+        float barWidth = xPosNext - xPos - 1;
+
+        // Better dynamic range: map -80dB to 0dB
+        float normalizedHeight = (_magnitudes[i] + 80.0f) / 80.0f;
+        normalizedHeight = fmaxf(0.0f, fminf(1.0f, normalizedHeight));
+        float height = normalizedHeight * bounds.size.height;
+
+        NSRect bar = NSMakeRect(xPos, 0, barWidth, height);
         NSRectFill(bar);
     }
 }
