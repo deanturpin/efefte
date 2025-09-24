@@ -4,7 +4,7 @@
 #include <AudioUnit/AudioUnit.h>
 #include <vector>
 #include <mutex>
-#include "../../include/efefte.h"
+#include "../../include/keyq.h"
 
 // Audio Unit component description
 #define KEYQ_COMP_TYPE 'aufx'  // Effect type

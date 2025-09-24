@@ -56,7 +56,7 @@ target_link_libraries(KEYQAudioUnit
 )
 
 # Installation
-install(TARGETS KEYQAudioUnit)
+install(TARGETS KEYQAudioUnit
     COMPONENT "AudioUnit"
     LIBRARY DESTINATION "~/Library/Audio/Plug-Ins/Components"
 )
