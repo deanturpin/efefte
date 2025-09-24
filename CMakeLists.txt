@@ -50,7 +50,7 @@ if(FFTW3_FOUND)
 endif()
 
 # Install targets
-install(TARGETS keyq libkeyq)
+install(TARGETS keyq libkeyq
     RUNTIME DESTINATION bin
     LIBRARY DESTINATION lib
     ARCHIVE DESTINATION lib)

@@ -112,13 +112,6 @@ The `.github/workflows/build-and-release.yml` workflow:
 4. Publishes GitHub release with all artifacts
 5. Requires `contents: write` permission for releases
 
-## Project Status Notes
-
-- Logic Pro plugin currently causes crashes (under investigation)
-- Standalone app works with microphone input
-- FFT library passes basic accuracy tests
-- DMG installer includes "Install KEYQ" app to handle folder creation
-
 ## User Preferences (from global CLAUDE.md)
 
 - Use British English spellings
