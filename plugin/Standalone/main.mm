@@ -39,14 +39,46 @@
     [[NSColor blackColor] setFill];
     NSRectFill(dirtyRect);
 
-    // Draw spectrum bars with logarithmic frequency axis
+    // Get bounds early
     NSRect bounds = self.bounds;
+
+    // Draw a red indicator dot if we have no audio data
+    static int frameCount = 0;
+    frameCount++;
+
+    // Check if magnitudes are all very low (no audio)
+    float maxMag = -100.0f;
+    for (size_t i = 0; i < _magnitudes.size(); ++i) {
+        if (_magnitudes[i] > maxMag) maxMag = _magnitudes[i];
+    }
+
+    // Draw status indicator
+    if (maxMag < -70.0f) {
+        // Red dot - no audio
+        [[NSColor redColor] setFill];
+        NSRect indicator = NSMakeRect(bounds.size.width - 20, bounds.size.height - 20, 10, 10);
+        [[NSBezierPath bezierPathWithOvalInRect:indicator] fill];
+    } else {
+        // Green dot - receiving audio
+        [[NSColor greenColor] setFill];
+        NSRect indicator = NSMakeRect(bounds.size.width - 20, bounds.size.height - 20, 10, 10);
+        [[NSBezierPath bezierPathWithOvalInRect:indicator] fill];
+    }
+
+    // Draw spectrum bars with logarithmic frequency axis
 
     [[NSColor greenColor] setFill];
 
     // Draw with logarithmic spacing - more space for lower frequencies
     int totalBars = 100; // Number of bars to display
     float pixelWidth = bounds.size.width / totalBars;
+
+    // Safety check
+    if (_magnitudes.empty() || bounds.size.width <= 0 || bounds.size.height <= 0) {
+        NSLog(@"Warning: Invalid draw state - magnitudes=%zu, bounds=(%f,%f)",
+              _magnitudes.size(), bounds.size.width, bounds.size.height);
+        return;
+    }
 
     for (int barIndex = 0; barIndex < totalBars; ++barIndex) {
         // Map bar position to FFT bin logarithmically
@@ -55,10 +87,20 @@
         float curved = normalized * normalized * normalized; // Cubic curve for log-like behavior
         int binIndex = (int)(curved * (_magnitudes.size() - 1));
 
-        if (binIndex >= _magnitudes.size()) continue;
+        // Safety bounds check
+        if (binIndex < 0 || binIndex >= _magnitudes.size()) {
+            NSLog(@"Bin index out of range: %d (max %zu)", binIndex, _magnitudes.size());
+            continue;
+        }
 
-        // Better dynamic range: map -80dB to 0dB
-        float normalizedHeight = (_magnitudes[binIndex] + 80.0f) / 80.0f;
+        // Better dynamic range: map -60dB to +20dB for more visibility
+        float magnitude = _magnitudes[binIndex];
+        if (!isfinite(magnitude)) {
+            NSLog(@"Invalid magnitude at bin %d: %f", binIndex, magnitude);
+            continue;
+        }
+
+        float normalizedHeight = (magnitude + 60.0f) / 80.0f;  // More sensitive range
         normalizedHeight = fmaxf(0.0f, fminf(1.0f, normalizedHeight));
         float height = normalizedHeight * bounds.size.height;
 
@@ -84,6 +126,13 @@
         float imag = _fftOutput[i][1];
         float magnitude = sqrtf(real * real + imag * imag);
         float db = 20.0f * log10f(magnitude + 1e-10f);
+
+        // Check for NaN or Inf
+        if (!isfinite(db)) {
+            NSLog(@"Invalid dB value at bin %zu: magnitude=%f, db=%f", i, magnitude, db);
+            db = -80.0f; // Default to silence
+        }
+
         _magnitudes[i] = _magnitudes[i] * 0.8f + db * 0.2f; // Smooth
     }
 
