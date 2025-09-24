@@ -39,28 +39,31 @@
     [[NSColor blackColor] setFill];
     NSRectFill(dirtyRect);
 
-    // Draw spectrum bars with simple logarithmic scaling
+    // Draw spectrum bars with logarithmic frequency axis
     NSRect bounds = self.bounds;
 
     [[NSColor greenColor] setFill];
 
-    // Simple log scaling - just draw the first 128 bins with increasing width
-    int numBins = std::min(128, (int)_magnitudes.size());
-    for (int i = 1; i < numBins; ++i) { // Start from 1 to avoid log(0)
-        // Map bin index logarithmically to screen position
-        float logPos = log10f((float)i / numBins * 99.0f + 1.0f) / 2.0f; // log10(1) to log10(100)
-        float logPosNext = log10f((float)(i+1) / numBins * 99.0f + 1.0f) / 2.0f;
+    // Draw with logarithmic spacing - more space for lower frequencies
+    int totalBars = 100; // Number of bars to display
+    float pixelWidth = bounds.size.width / totalBars;
 
-        float xPos = logPos * bounds.size.width;
-        float xPosNext = logPosNext * bounds.size.width;
-        float barWidth = xPosNext - xPos - 1;
+    for (int barIndex = 0; barIndex < totalBars; ++barIndex) {
+        // Map bar position to FFT bin logarithmically
+        // Use a simple power curve to map bar index to bin index
+        float normalized = (float)barIndex / totalBars;
+        float curved = normalized * normalized * normalized; // Cubic curve for log-like behavior
+        int binIndex = (int)(curved * (_magnitudes.size() - 1));
+
+        if (binIndex >= _magnitudes.size()) continue;
 
         // Better dynamic range: map -80dB to 0dB
-        float normalizedHeight = (_magnitudes[i] + 80.0f) / 80.0f;
+        float normalizedHeight = (_magnitudes[binIndex] + 80.0f) / 80.0f;
         normalizedHeight = fmaxf(0.0f, fminf(1.0f, normalizedHeight));
         float height = normalizedHeight * bounds.size.height;
 
-        NSRect bar = NSMakeRect(xPos, 0, barWidth, height);
+        float xPos = barIndex * pixelWidth;
+        NSRect bar = NSMakeRect(xPos, 0, pixelWidth - 1, height);
         NSRectFill(bar);
     }
 }
