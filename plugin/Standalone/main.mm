@@ -39,55 +39,15 @@
     [[NSColor blackColor] setFill];
     NSRectFill(dirtyRect);
 
-    // Draw spectrum bars with logarithmic frequency scaling
+    // Draw spectrum bars
     NSRect bounds = self.bounds;
+    float barWidth = bounds.size.width / _magnitudes.size();
 
     [[NSColor greenColor] setFill];
-
-    // Logarithmic frequency mapping
-    float minFreq = 20.0f;    // 20 Hz minimum
-    float maxFreq = 20000.0f; // 20 kHz maximum
-    float logMin = log10f(minFreq);
-    float logMax = log10f(maxFreq);
-
-    // Draw bars with logarithmic spacing
-    int numBars = 128; // Number of visible bars
-    for (int bar = 0; bar < numBars; ++bar) {
-        // Map bar position to frequency logarithmically
-        float barPos = (float)bar / numBars;
-        float nextBarPos = (float)(bar + 1) / numBars;
-
-        float logFreq = logMin + barPos * (logMax - logMin);
-        float logFreqNext = logMin + nextBarPos * (logMax - logMin);
-
-        float freq = powf(10.0f, logFreq);
-        float freqNext = powf(10.0f, logFreqNext);
-
-        // Convert frequency to FFT bin index
-        float sampleRate = 44100.0f;
-        int binIndex = (int)(freq / (sampleRate / 512.0f));
-        int binIndexNext = (int)(freqNext / (sampleRate / 512.0f));
-
-        if (binIndex >= _magnitudes.size()) break;
-
-        // Average magnitude across bins for this bar
-        float avgMagnitude = 0.0f;
-        int binCount = 0;
-        for (int bin = binIndex; bin < std::min(binIndexNext, (int)_magnitudes.size()); ++bin) {
-            avgMagnitude += _magnitudes[bin];
-            binCount++;
-        }
-        if (binCount > 0) avgMagnitude /= binCount;
-
-        // Scale height with better dynamic range
-        float height = (avgMagnitude + 80.0f) / 100.0f * bounds.size.height;
-        height = fmaxf(0.0f, fminf(height, bounds.size.height)); // Clamp to prevent clipping
-
-        float xPos = barPos * bounds.size.width;
-        float barWidth = (nextBarPos - barPos) * bounds.size.width - 1;
-
-        NSRect barRect = NSMakeRect(xPos, 0, barWidth, height);
-        NSRectFill(barRect);
+    for (size_t i = 0; i < _magnitudes.size(); ++i) {
+        float height = (_magnitudes[i] + 60.0f) / 60.0f * bounds.size.height; // Normalize dB
+        NSRect bar = NSMakeRect(i * barWidth, 0, barWidth - 1, height);
+        NSRectFill(bar);
     }
 }
 
@@ -101,16 +61,13 @@
     // Execute FFT
     fftw_execute(_fftPlan);
 
-    // Calculate magnitudes with better smoothing
+    // Calculate magnitudes
     for (size_t i = 0; i < _magnitudes.size(); ++i) {
         float real = _fftOutput[i][0];
         float imag = _fftOutput[i][1];
         float magnitude = sqrtf(real * real + imag * imag);
         float db = 20.0f * log10f(magnitude + 1e-10f);
-
-        // Improved smoothing: faster rise, slower fall
-        float smoothing = db > _magnitudes[i] ? 0.3f : 0.85f;
-        _magnitudes[i] = _magnitudes[i] * smoothing + db * (1.0f - smoothing);
+        _magnitudes[i] = _magnitudes[i] * 0.8f + db * 0.2f; // Smooth
     }
 
     dispatch_async(dispatch_get_main_queue(), ^{
@@ -230,32 +187,13 @@
     [_window makeKeyAndOrderFront:nil];
 
     // Add info label
-    NSTextField* infoLabel = [[NSTextField alloc] initWithFrame:NSMakeRect(10, 10, 400, 20)];
-    [infoLabel setStringValue:@"KEYQ FFT - Logarithmic Spectrum (20Hz-20kHz)"];
+    NSTextField* infoLabel = [[NSTextField alloc] initWithFrame:NSMakeRect(10, 10, 300, 20)];
+    [infoLabel setStringValue:@"KEYQ FFT Library - Real-time Spectrum"];
     [infoLabel setBezeled:NO];
     [infoLabel setDrawsBackground:NO];
     [infoLabel setEditable:NO];
     [infoLabel setTextColor:[NSColor whiteColor]];
     [_spectrumView addSubview:infoLabel];
-
-    // Add frequency markers
-    NSArray* freqMarkers = @[@20, @50, @100, @200, @500, @1000, @2000, @5000, @10000, @20000];
-    for (NSNumber* freq in freqMarkers) {
-        float f = [freq floatValue];
-        float logPos = (log10f(f) - log10f(20.0f)) / (log10f(20000.0f) - log10f(20.0f));
-        float xPos = logPos * frame.size.width;
-
-        NSTextField* marker = [[NSTextField alloc] initWithFrame:NSMakeRect(xPos - 20, frame.size.height - 25, 40, 20)];
-        NSString* label = f >= 1000 ? [NSString stringWithFormat:@"%.0fk", f/1000] : [NSString stringWithFormat:@"%.0f", f];
-        [marker setStringValue:label];
-        [marker setBezeled:NO];
-        [marker setDrawsBackground:NO];
-        [marker setEditable:NO];
-        [marker setTextColor:[NSColor grayColor]];
-        [marker setAlignment:NSTextAlignmentCenter];
-        [marker setFont:[NSFont systemFontOfSize:9]];
-        [_spectrumView addSubview:marker];
-    }
 }
 
 - (BOOL)applicationShouldTerminateAfterLastWindowClosed:(NSApplication*)sender {
