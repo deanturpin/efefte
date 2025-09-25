@@ -94,8 +94,8 @@ OSStatus KEYQAudioUnit::ProcessBufferLists(AudioUnitRenderActionFlags* ioActionF
             ringBuffer[writeIndex] = samples[frame];
             writeIndex = (writeIndex + 1) % ringBuffer.size();
 
-            // When we have enough samples, perform FFT
-            if (writeIndex % (kFFTSize / 4) == 0) {  // 75% overlap
+            // When we have enough samples, perform FFT (less frequent for stability)
+            if (writeIndex % kFFTSize == 0) {  // No overlap for now
                 ProcessFFT();
             }
         }

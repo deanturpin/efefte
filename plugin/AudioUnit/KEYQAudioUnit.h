@@ -8,8 +8,8 @@
 
 // Audio Unit component description
 #define KEYQ_COMP_TYPE 'aufx'  // Effect type
-#define KEYQ_COMP_SUBTYPE 'efft'
-#define KEYQ_COMP_MANUF 'Efft'
+#define KEYQ_COMP_SUBTYPE 'keyq'
+#define KEYQ_COMP_MANUF 'Turb'
 
 class KEYQAudioUnit {
 public:

@@ -150,7 +150,82 @@ fftw_plan fftw_plan_dft_c2r_1d(int n, fftw_complex *in, double *out, unsigned fl
     return plan;
 }
 
-// Basic DFT implementation (O(N²) - slow but correct)
+// Check if n is a power of 2
+static bool is_power_of_2(int n) {
+    return n > 0 && (n & (n - 1)) == 0;
+}
+
+// Bit-reverse permutation
+static void bit_reverse(fftw_complex *data, int n) {
+    int j = 0;
+    for (int i = 1; i < n; ++i) {
+        int bit = n >> 1;
+        while (j & bit) {
+            j ^= bit;
+            bit >>= 1;
+        }
+        j ^= bit;
+        if (i < j) {
+            std::swap(data[i][0], data[j][0]);
+            std::swap(data[i][1], data[j][1]);
+        }
+    }
+}
+
+// Cooley-Tukey FFT implementation (O(N log N))
+static void cooley_tukey_fft(fftw_complex *data, int n, int sign) {
+    if (n <= 1) return;
+
+    // Bit-reverse the input
+    bit_reverse(data, n);
+
+    // Cooley-Tukey FFT
+    const double direction = (sign == FFTW_FORWARD) ? -1.0 : 1.0;
+
+    for (int len = 2; len <= n; len <<= 1) {
+        const double angle = direction * 2.0 * std::numbers::pi / len;
+        const double wlen_r = std::cos(angle);
+        const double wlen_i = std::sin(angle);
+
+        for (int i = 0; i < n; i += len) {
+            double w_r = 1.0;
+            double w_i = 0.0;
+
+            for (int j = 0; j < len / 2; ++j) {
+                const int u = i + j;
+                const int v = i + j + len / 2;
+
+                const double u_r = data[u][0];
+                const double u_i = data[u][1];
+                const double v_r = data[v][0];
+                const double v_i = data[v][1];
+
+                const double temp_r = w_r * v_r - w_i * v_i;
+                const double temp_i = w_r * v_i + w_i * v_r;
+
+                data[u][0] = u_r + temp_r;
+                data[u][1] = u_i + temp_i;
+                data[v][0] = u_r - temp_r;
+                data[v][1] = u_i - temp_i;
+
+                const double new_w_r = w_r * wlen_r - w_i * wlen_i;
+                const double new_w_i = w_r * wlen_i + w_i * wlen_r;
+                w_r = new_w_r;
+                w_i = new_w_i;
+            }
+        }
+    }
+
+    // For inverse transform, divide by N
+    if (sign == FFTW_BACKWARD) {
+        for (int i = 0; i < n; ++i) {
+            data[i][0] /= n;
+            data[i][1] /= n;
+        }
+    }
+}
+
+// Fallback DFT for non-power-of-2 sizes (O(N²) - slow but correct)
 static void basic_dft(const fftw_complex *input, fftw_complex *output, int n, int sign) {
     const double direction = (sign == FFTW_FORWARD) ? -1.0 : 1.0;
 
@@ -183,14 +258,21 @@ static void basic_dft(const fftw_complex *input, fftw_complex *output, int n, in
 void fftw_execute(const fftw_plan p) {
     if (!p)
         return;
-    std::print("fftw_execute: executing plan with n={}, sign={}\n", p->n, p->sign);
-
     if (p->is_r2c || p->is_c2r) {
-        std::print("Real-to-complex transforms not yet implemented in basic DFT\n");
+        std::print("Real-to-complex transforms not yet implemented\n");
         return;
     }
 
-    basic_dft(p->in, p->out, p->n, p->sign);
+    // Use fast FFT for power-of-2 sizes, fallback to DFT otherwise
+    if (is_power_of_2(p->n)) {
+        // Copy input to output for in-place FFT
+        if (p->in != p->out) {
+            memcpy(p->out, p->in, p->n * sizeof(fftw_complex));
+        }
+        cooley_tukey_fft(p->out, p->n, p->sign);
+    } else {
+        basic_dft(p->in, p->out, p->n, p->sign);
+    }
 }
 
 void fftw_execute_dft(const fftw_plan p, fftw_complex *in, fftw_complex *out) {
