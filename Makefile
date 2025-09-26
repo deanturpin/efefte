@@ -74,11 +74,16 @@ dmg: clean build plugin
 	@echo "Creating installer app..."
 	osacompile -o $(BUILD_DIR)/dmg-contents/Install\ KEYQ.app installer/Install.applescript
 	@echo "Creating DMG..."
+	@GIT_HASH=$$(git rev-parse --short HEAD); \
 	hdiutil create -volname "KEYQ" \
 		-srcfolder $(BUILD_DIR)/dmg-contents \
 		-ov -format UDZO \
-		$(BUILD_DIR)/KEYQ-v$$(git describe --tags --abbrev=0 2>/dev/null | sed 's/v//' || echo "1.0.0").dmg
-	@echo "DMG created: $(BUILD_DIR)/KEYQ-*.dmg"
+		$(BUILD_DIR)/KEYQ-v$${GIT_HASH}.dmg
+	@echo "DMG created: $(BUILD_DIR)/KEYQ-v$$(git rev-parse --short HEAD).dmg"
+	@echo "Packaging individual components..."
+	@GIT_HASH=$$(git rev-parse --short HEAD); \
+	cd $(BUILD_DIR) && zip -r KEYQ-AudioUnit-$${GIT_HASH}.zip KEYQAudioUnit.component && \
+	zip -r KEYQ-Standalone-$${GIT_HASH}.zip KEYQStandalone.app
 
 # Deploy target with auto-commit and push
 deploy: format build test
@@ -87,19 +92,27 @@ deploy: format build test
 	git commit -m "Auto-commit from make deploy 🤖" || echo "No changes to commit"
 	git push
 
-# Create a new release with downloadable assets
-release: clean build plugin
-	@echo "Creating release..."
-	@if [ ! -d $(BUILD_DIR)/KEYQAudioUnit.component ]; then echo "Audio Unit not found"; exit 1; fi
-	@if [ ! -d $(BUILD_DIR)/KEYQStandalone.app ]; then echo "Standalone app not found"; exit 1; fi
-	@echo "Packaging Audio Unit..."
-	cd $(BUILD_DIR) && zip -r KEYQ-AudioUnit-$$(git describe --tags --abbrev=0 2>/dev/null || echo "v1.0.0").zip KEYQAudioUnit.component
-	@echo "Packaging Standalone App..."
-	cd $(BUILD_DIR) && zip -r KEYQ-Standalone-$$(git describe --tags --abbrev=0 2>/dev/null || echo "v1.0.0").zip KEYQStandalone.app
-	@echo "Creating GitHub release..."
-	@echo "Current version: $$(git describe --tags --abbrev=0 2>/dev/null || echo 'v1.0.0')"
-	@echo "Please create a new semantic version tag first (e.g., git tag v1.0.2 && git push --tags)"
-	@echo "Then GitHub Actions will automatically build and release."
+# Create and publish a GitHub release with packages
+release: dmg
+	@echo "🚀 Creating GitHub release..."
+	@GIT_HASH=$$(git rev-parse --short HEAD); \
+	DMG_FILE="KEYQ-v$${GIT_HASH}.dmg"; \
+	if command -v gh >/dev/null 2>&1; then \
+		echo "📤 Creating release $${GIT_HASH}..."; \
+		gh release create "$${GIT_HASH}" \
+			--title "KEYQ Build $${GIT_HASH}" \
+			--notes $$'Automated release of KEYQ FFT library and Logic Pro plugin.\n\n**Features:**\n- High-performance C++23 FFT library (FFTW3 compatible)\n- Logic Pro Audio Unit spectrum analyser plugin\n- Standalone spectrum analyser app\n- Real-time audio processing with test tone generation\n\n**Download:** '"$${DMG_FILE}" \
+			"$(BUILD_DIR)/$${DMG_FILE}" \
+			"$(BUILD_DIR)/KEYQ-AudioUnit-$${GIT_HASH}.zip" \
+			"$(BUILD_DIR)/KEYQ-Standalone-$${GIT_HASH}.zip" || echo "Release might already exist"; \
+		echo "✅ Release published at: https://github.com/deanturpin/keyq/releases/tag/$${GIT_HASH}"; \
+	else \
+		echo "⚠️  GitHub CLI not installed. Install with: brew install gh"; \
+		echo "📁 Files ready for manual upload:"; \
+		echo "   - $(BUILD_DIR)/$${DMG_FILE}"; \
+		echo "   - $(BUILD_DIR)/KEYQ-AudioUnit-$${GIT_HASH}.zip"; \
+		echo "   - $(BUILD_DIR)/KEYQ-Standalone-$${GIT_HASH}.zip"; \
+	fi
 
 # Help
 help:
