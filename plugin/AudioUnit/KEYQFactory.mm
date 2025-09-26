@@ -90,6 +90,12 @@
         // Process with KEYQ
         cppUnit->ProcessBufferLists(&pullFlags, timestamp, frameCount, outputData);
 
+        // Debug: Log render calls occasionally
+        static int renderCount = 0;
+        if (++renderCount % 2000 == 1) {
+            NSLog(@"KEYQ Render Block: frameCount=%u, call #%d", frameCount, renderCount);
+        }
+
         return noErr;
     };
 }

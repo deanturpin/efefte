@@ -49,13 +49,13 @@ if(FFTW3_FOUND)
     target_compile_definitions(keyq_benchmark PRIVATE USE_REAL_FFTW3)
 endif()
 
-# Install targets
+# Install targets (to user directories to avoid sudo)
 install(TARGETS keyq libkeyq
-    RUNTIME DESTINATION bin
-    LIBRARY DESTINATION lib
-    ARCHIVE DESTINATION lib)
+    RUNTIME DESTINATION ~/bin
+    LIBRARY DESTINATION ~/lib
+    ARCHIVE DESTINATION ~/lib)
 
-install(FILES include/keyq.h DESTINATION include)
+install(FILES include/keyq.h DESTINATION ~/include)
 
 # Testing and benchmarking (will be added later)
 enable_testing()
@@ -85,4 +85,4 @@ write_basic_package_version_file(
 
 install(FILES
     "${CMAKE_CURRENT_BINARY_DIR}/keyqConfigVersion.cmake"
-    DESTINATION lib/cmake/keyq)
+    DESTINATION ~/lib/cmake/keyq)

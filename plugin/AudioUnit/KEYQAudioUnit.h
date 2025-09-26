@@ -67,6 +67,10 @@ private:
     Float64 sampleRate;
     UInt32 maxFramesPerSlice;
 
+    // Test tone generation
+    double testTonePhase;
+    bool silenceDetected;
+
     // Window function
     std::vector<float> windowFunction;
     void CreateHannWindow();

@@ -39,6 +39,8 @@ plugin: build
 	@echo "Building plugins..."
 	@if [ "$$(uname)" = "Darwin" ]; then \
 		echo "Building Audio Unit and Standalone app..."; \
+		echo "Installing Audio Unit plugin..."; \
+		cd $(BUILD_DIR) && make install; \
 	else \
 		echo "Plugins only supported on macOS"; \
 	fi

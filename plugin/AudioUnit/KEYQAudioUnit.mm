@@ -11,7 +11,9 @@ KEYQAudioUnit::KEYQAudioUnit()
       fftOutput(nullptr),
       writeIndex(0),
       sampleRate(44100.0),
-      maxFramesPerSlice(512) {
+      maxFramesPerSlice(512),
+      testTonePhase(0.0),
+      silenceDetected(false) {
 
     // Allocate FFT buffers
     fftInput = (fftw_complex*)fftw_malloc(sizeof(fftw_complex) * kFFTSize);
@@ -85,23 +87,59 @@ OSStatus KEYQAudioUnit::ProcessBufferLists(AudioUnitRenderActionFlags* ioActionF
                                              UInt32 inNumberFrames,
                                              AudioBufferList* ioData) {
 
+    // Debug: Log processing calls (limit spam)
+    static int processCount = 0;
+    if (++processCount % 1000 == 1) {
+        NSLog(@"KEYQ ProcessBufferLists: frames=%u, buffers=%u, call #%d",
+              inNumberFrames, ioData->mNumberBuffers, processCount);
+    }
+
+    // Detect silence in input
+    bool hasSignal = false;
+    for (UInt32 channel = 0; channel < ioData->mNumberBuffers && !hasSignal; ++channel) {
+        Float32* samples = (Float32*)ioData->mBuffers[channel].mData;
+        for (UInt32 frame = 0; frame < inNumberFrames; ++frame) {
+            if (fabsf(samples[frame]) > 0.001f) {  // Threshold for silence
+                hasSignal = true;
+                break;
+            }
+        }
+    }
+
+    silenceDetected = !hasSignal;
+
     // Process each channel
     for (UInt32 channel = 0; channel < ioData->mNumberBuffers; ++channel) {
         Float32* samples = (Float32*)ioData->mBuffers[channel].mData;
 
-        // Copy samples to ring buffer
+        // Generate test tone when silent (440Hz + 880Hz)
+        if (silenceDetected) {
+            static int toneCount = 0;
+            if (++toneCount % 1000 == 1) {
+                NSLog(@"KEYQ: Generating test tone (call #%d)", toneCount);
+            }
+            for (UInt32 frame = 0; frame < inNumberFrames; ++frame) {
+                double time = testTonePhase / sampleRate;
+                float testTone = 0.1f * (sinf(2.0f * M_PI * 440.0f * time) +
+                                        0.5f * sinf(2.0f * M_PI * 880.0f * time));
+                samples[frame] = testTone;
+                testTonePhase += 1.0;
+                if (testTonePhase >= sampleRate) testTonePhase -= sampleRate;
+            }
+        }
+
+        // Copy samples to ring buffer for analysis
         for (UInt32 frame = 0; frame < inNumberFrames; ++frame) {
             ringBuffer[writeIndex] = samples[frame];
             writeIndex = (writeIndex + 1) % ringBuffer.size();
 
             // When we have enough samples, perform FFT (less frequent for stability)
             if (writeIndex % kFFTSize == 0) {  // No overlap for now
+                static int fftTriggerCount = 0;
+                NSLog(@"KEYQ: Triggering FFT processing (call #%d)", ++fftTriggerCount);
                 ProcessFFT();
             }
         }
-
-        // Pass through audio unchanged (analyser only, no processing)
-        // If you want to process audio, modify samples here
     }
 
     return noErr;
@@ -130,6 +168,9 @@ void KEYQAudioUnit::UpdateSpectrum() {
     std::lock_guard<std::mutex> lock(spectrumMutex);
 
     // Calculate magnitudes for positive frequencies only
+    float maxMagnitude = -100.0f;
+    int peakBin = 0;
+
     for (int i = 0; i < kFFTSize / 2; ++i) {
         float real = fftOutput[i][0];
         float imag = fftOutput[i][1];
@@ -140,6 +181,20 @@ void KEYQAudioUnit::UpdateSpectrum() {
 
         // Smooth with previous value
         spectrumMagnitudes[i] = spectrumMagnitudes[i] * 0.7f + db * 0.3f;
+
+        // Track peak for debugging
+        if (spectrumMagnitudes[i] > maxMagnitude) {
+            maxMagnitude = spectrumMagnitudes[i];
+            peakBin = i;
+        }
+    }
+
+    // Log peak frequency (every 100 FFTs to avoid spam)
+    static int fftCount = 0;
+    if (++fftCount % 100 == 0) {
+        float peakFreq = (float)peakBin * sampleRate / kFFTSize;
+        NSLog(@"KEYQ FFT: Peak at %.1f Hz (%.1f dB) %s",
+              peakFreq, maxMagnitude, silenceDetected ? "[TEST TONE]" : "[LIVE AUDIO]");
     }
 }
 
