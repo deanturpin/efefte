@@ -11,7 +11,7 @@
     <key>CFBundleInfoDictionaryVersion</key>
     <string>6.0</string>
     <key>CFBundleName</key>
-    <string>Turbeaux Sounds KEYQ</string>
+    <string>KEYQ</string>
     <key>CFBundlePackageType</key>
     <string>BNDL</string>
     <key>CFBundleShortVersionString</key>
@@ -30,9 +30,9 @@
             <key>manufacturer</key>
             <string>Turb</string>
             <key>name</key>
-            <string>Turbeaux Sounds KEYQ</string>
+            <string>KEYQ</string>
             <key>description</key>
-            <string>Turbeaux Sounds KEYQ - Real-time FFT spectrum analyser</string>
+            <string>KEYQ - Real-time FFT spectrum analyser</string>
             <key>version</key>
             <integer>1</integer>
             <key>factoryFunction</key>

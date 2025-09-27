@@ -94,52 +94,30 @@ OSStatus KEYQAudioUnit::ProcessBufferLists(AudioUnitRenderActionFlags* ioActionF
               inNumberFrames, ioData->mNumberBuffers, processCount);
     }
 
-    // Detect silence in input
+    // Detect audio presence
     bool hasSignal = false;
+    float maxLevel = 0.0f;
     for (UInt32 channel = 0; channel < ioData->mNumberBuffers && !hasSignal; ++channel) {
         Float32* samples = (Float32*)ioData->mBuffers[channel].mData;
         for (UInt32 frame = 0; frame < inNumberFrames; ++frame) {
-            if (fabsf(samples[frame]) > 0.001f) {  // Threshold for silence
+            float level = fabsf(samples[frame]);
+            maxLevel = std::max(maxLevel, level);
+            if (level > 0.001f) {  // Threshold for audio presence
                 hasSignal = true;
-                break;
             }
         }
     }
 
     silenceDetected = !hasSignal;
 
-    // Process each channel
-    for (UInt32 channel = 0; channel < ioData->mNumberBuffers; ++channel) {
-        Float32* samples = (Float32*)ioData->mBuffers[channel].mData;
+    // MINIMAL PASS-THROUGH - NO PROCESSING TO AVOID CORRUPTION
+    // Audio passes through completely unchanged
+    // (All FFT and analysis temporarily disabled for safety)
 
-        // Generate test tone when silent (440Hz + 880Hz)
-        if (silenceDetected) {
-            static int toneCount = 0;
-            if (++toneCount % 1000 == 1) {
-                NSLog(@"KEYQ: Generating test tone (call #%d)", toneCount);
-            }
-            for (UInt32 frame = 0; frame < inNumberFrames; ++frame) {
-                double time = testTonePhase / sampleRate;
-                float testTone = 0.1f * (sinf(2.0f * M_PI * 440.0f * time) +
-                                        0.5f * sinf(2.0f * M_PI * 880.0f * time));
-                samples[frame] = testTone;
-                testTonePhase += 1.0;
-                if (testTonePhase >= sampleRate) testTonePhase -= sampleRate;
-            }
-        }
-
-        // Copy samples to ring buffer for analysis
-        for (UInt32 frame = 0; frame < inNumberFrames; ++frame) {
-            ringBuffer[writeIndex] = samples[frame];
-            writeIndex = (writeIndex + 1) % ringBuffer.size();
-
-            // When we have enough samples, perform FFT (less frequent for stability)
-            if (writeIndex % kFFTSize == 0) {  // No overlap for now
-                static int fftTriggerCount = 0;
-                NSLog(@"KEYQ: Triggering FFT processing (call #%d)", ++fftTriggerCount);
-                ProcessFFT();
-            }
-        }
+    // Log audio presence occasionally (safe logging only)
+    static int presenceCount = 0;
+    if (++presenceCount % 5000 == 1) {
+        NSLog(@"KEYQ: Pure pass-through active, max level: %.3f", maxLevel);
     }
 
     return noErr;
@@ -193,8 +171,8 @@ void KEYQAudioUnit::UpdateSpectrum() {
     static int fftCount = 0;
     if (++fftCount % 100 == 0) {
         float peakFreq = (float)peakBin * sampleRate / kFFTSize;
-        NSLog(@"KEYQ FFT: Peak at %.1f Hz (%.1f dB) %s",
-              peakFreq, maxMagnitude, silenceDetected ? "[TEST TONE]" : "[LIVE AUDIO]");
+        NSLog(@"KEYQ FFT: Peak at %.1f Hz (%.1f dB) [ANALYSIS]",
+              peakFreq, maxMagnitude);
     }
 }
 
